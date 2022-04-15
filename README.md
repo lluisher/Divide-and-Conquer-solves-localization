@@ -40,9 +40,9 @@ The observables obtained are:
 
 3. The fluctuations of the Center-of-Mass (CoM), for the case of two particles, where CoM is defined as:
 
-<img src="https://render.githubusercontent.com/render/math?math={\text{CoM}(\psi)_{N=2} = \sum_{i<j} \frac{i+j}{2} |\psi(i,j)|^2}#gh-light-mode-only">
+<img src="https://render.githubusercontent.com/render/math?math={\text{CoM}(\psi)_{N=2} = \sum_{i<j} \frac{i %2B j}{2} |\psi(i,j)|^2}#gh-light-mode-only">
 
-<img src="https://render.githubusercontent.com/render/math?math={\color{white}\text{CoM}(\psi)_{N=2} = \sum_{i<j} \frac{i+j}{2} |\psi(i,j)|^2}#gh-dark-mode-only">
+<img src="https://render.githubusercontent.com/render/math?math={\color{white}\text{CoM}(\psi)_{N=2} = \sum_{i<j} \frac{i %2B j}{2} |\psi(i,j)|^2}#gh-dark-mode-only">
 
 
 
@@ -63,9 +63,9 @@ The observables obtained are:
 
 6. The probability to find the 2 particles in consecutive sites:
 
-<img src="https://render.githubusercontent.com/render/math?math={\text{P}_T(\psi)_{N=2} = \sum_{i} |\psi(i,i+1)|^2}#gh-light-mode-only">
+<img src="https://render.githubusercontent.com/render/math?math={\text{P}_T(\psi)_{N=2} = \sum_{i} |\psi(i,i%2B 1)|^2}#gh-light-mode-only">
 
-<img src="https://render.githubusercontent.com/render/math?math={\color{white}\text{P}_T(\psi)_{N=2} = \sum_{i} |\psi(i,i+1)|^2}#gh-dark-mode-only">
+<img src="https://render.githubusercontent.com/render/math?math={\color{white}\text{P}_T(\psi)_{N=2} = \sum_{i} |\psi(i,i%2B 1)|^2}#gh-dark-mode-only">
 
 
 
