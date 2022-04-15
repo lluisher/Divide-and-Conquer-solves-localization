@@ -4,10 +4,6 @@ Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigensta
 ## Aim: 
 Study physical properties of arbitrarily large systems, reducing the effect of boundary conditions and dealing with apperance of, and effects due to, rare regions (regions where the fluctuations of the random potential is far away from the mean fluctuations). The limitation of the algorithm is given by the localization length of the eigenstates, not the system size. The localization length of the eigenstates depends on the considered potential (microscopic details).
 
-<img src="https://render.githubusercontent.com/render/math?math={P(A|B)=\frac{\P(B|A)\P(A)}{\P(B|A)\P(A)\%2BP(B|\neg A)\P(\neg A)}}##gh-light-mode-only">
-<img src="https://render.githubusercontent.com/render/math?math={\color{white}\P(A|B)=\frac{\P(B|A)\P(A)}{\P(B|A)\P(A)\%2BP(B|\neg A)\P(\neg A)}}#gh-dark-mode-only">
-
-
 ## How to use it: 
 
 Examples of how to use the implemented functions are given in the files test\_functions\_N1.py and test\_functions\_N2.py.
@@ -16,8 +12,8 @@ Examples of how to use the implemented functions are given in the files test\_fu
 ## Model implemented: 
 Disordered tight-binding model in 1D:
 
-<img src="https://latex.codecogs.com/svg.image?H&space;=&space;\sum_{i=1}^L&space;h_i&space;n_i&space;&plus;&space;\sum_{i=1}^{L-1}&space;J_{i,i&plus;1}&space;(a_i^\dag&space;a_{i&plus;1}&space;&plus;&space;a_{i&plus;1}^\dag&space;a_{i})&space;&plus;&space;J_z&space;\sum_{i=1}^{L-1}&space;n_i&space;n_{i&plus;1}" title="https://latex.codecogs.com/svg.image?H = \sum_{i=1}^L h_i n_i + \sum_{i=1}^{L-1} J_{i,i+1} (a_i^\dag a_{i+1} + a_{i+1}^\dag a_{i}) + J_z \sum_{i=1}^{L-1} n_i n_{i+1}#gh-light-mode-only">
-<img src="https://latex.codecogs.com/svg.image?H&space;=&space;\sum_{i=1}^L&space;h_i&space;n_i&space;&plus;&space;\sum_{i=1}^{L-1}&space;J_{i,i&plus;1}&space;(a_i^\dag&space;a_{i&plus;1}&space;&plus;&space;a_{i&plus;1}^\dag&space;a_{i})&space;&plus;&space;J_z&space;\sum_{i=1}^{L-1}&space;n_i&space;n_{i&plus;1}" title="https://latex.codecogs.com/svg.image?H = \sum_{i=1}^L h_i n_i + \sum_{i=1}^{L-1} J_{i,i+1} (a_i^\dag a_{i+1} + a_{i+1}^\dag a_{i}) + J_z \sum_{i=1}^{L-1} n_i n_{i+1}##gh-dark-mode-only"/>
+<img src="https://latex.codecogs.com/svg.image?H&space;=&space;\sum_{i=1}^L&space;h_i&space;n_i&space;&plus;&space;\sum_{i=1}^{L-1}&space;J_{i,i&plus;1}&space;(a_i^\dag&space;a_{i&plus;1}&space;&plus;&space;a_{i&plus;1}^\dag&space;a_{i})&space;&plus;&space;J_z&space;\sum_{i=1}^{L-1}&space;n_i&space;n_{i&plus;1}" title="https://latex.codecogs.com/svg.image?H = \sum_{i=1}^L h_i n_i + \sum_{i=1}^{L-1} J_{i,i+1} (a_i^\dag a_{i+1} + a_{i+1}^\dag a_{i}) + J_z \sum_{i=1}^{L-1} n_i n_{i+1}##gh-light-mode-only">
+<img src="https://latex.codecogs.com/svg.image?H&space;=&space;\sum_{i=1}^L&space;h_i&space;n_i&space;&plus;&space;\sum_{i=1}^{L-1}&space;J_{i,i&plus;1}&space;(a_i^\dag&space;a_{i&plus;1}&space;&plus;&space;a_{i&plus;1}^\dag&space;a_{i})&space;&plus;&space;J_z&space;\sum_{i=1}^{L-1}&space;n_i&space;n_{i&plus;1}" title="https://latex.codecogs.com/svg.image?H = \sum_{i=1}^L h_i n_i + \sum_{i=1}^{L-1} J_{i,i+1} (a_i^\dag a_{i+1} + a_{i+1}^\dag a_{i}) + J_z \sum_{i=1}^{L-1} n_i n_{i+1}#gh-dark-mode-only"/>
 
 Other models can be studied, with the corresponding changes of the matrix to diagonalize and the calculation of the variance of the eigenstates of the subsystems.
 
