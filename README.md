@@ -13,7 +13,8 @@ Examples of how to use the implemented functions are given in the files test\_fu
 ## Model implemented: 
 Disordered tight-binding model in 1D:
 
-<img src="https://latex.codecogs.com/svg.image?H&space;=&space;\sum_{i=1}^L&space;h_i&space;n_i&space;&plus;&space;\sum_{i=1}^{L-1}&space;J_{i,i&plus;1}&space;(a_i^\dag&space;a_{i&plus;1}&space;&plus;&space;a_{i&plus;1}^\dag&space;a_{i})&space;&plus;&space;J_z&space;\sum_{i=1}^{L-1}&space;n_i&space;n_{i&plus;1}" title="https://latex.codecogs.com/svg.image?H = \sum_{i=1}^L h_i n_i + \sum_{i=1}^{L-1} J_{i,i+1} (a_i^\dag a_{i+1} + a_{i+1}^\dag a_{i}) + J_z \sum_{i=1}^{L-1} n_i n_{i+1}" />
+<img src="https://latex.codecogs.com/svg.image?H&space;=&space;\sum_{i=1}^L&space;h_i&space;n_i&space;&plus;&space;\sum_{i=1}^{L-1}&space;J_{i,i&plus;1}&space;(a_i^\dag&space;a_{i&plus;1}&space;&plus;&space;a_{i&plus;1}^\dag&space;a_{i})&space;&plus;&space;J_z&space;\sum_{i=1}^{L-1}&space;n_i&space;n_{i&plus;1}" title="https://latex.codecogs.com/svg.image?H = \sum_{i=1}^L h_i n_i + \sum_{i=1}^{L-1} J_{i,i+1} (a_i^\dag a_{i+1} + a_{i+1}^\dag a_{i}) + J_z \sum_{i=1}^{L-1} n_i n_{i+1}" ##gh-light-mode-only/>
+<img src="https://latex.codecogs.com/svg.image?H&space;=&space;\sum_{i=1}^L&space;h_i&space;n_i&space;&plus;&space;\sum_{i=1}^{L-1}&space;J_{i,i&plus;1}&space;(a_i^\dag&space;a_{i&plus;1}&space;&plus;&space;a_{i&plus;1}^\dag&space;a_{i})&space;&plus;&space;J_z&space;\sum_{i=1}^{L-1}&space;n_i&space;n_{i&plus;1}" title="https://latex.codecogs.com/svg.image?H = \sum_{i=1}^L h_i n_i + \sum_{i=1}^{L-1} J_{i,i+1} (a_i^\dag a_{i+1} + a_{i+1}^\dag a_{i}) + J_z \sum_{i=1}^{L-1} n_i n_{i+1}" ##gh-dark-mode-only/>
 
 Other models can be studied, with the corresponding changes of the matrix to diagonalize and the calculation of the variance of the eigenstates of the subsystems.
 
