@@ -1,11 +1,11 @@
 # Divide-and-Conquer-solves-localization
 Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigenstates and the dynamical evolution of states out-of-equilibrium in arbitrarily large systems with few (1 or 2) particles.
 
-##Aim: 
+## Aim: 
 Study physical properties of arbitrarily large systems, reducing the effect of boundary conditions and dealing with apperance of, and effects due to, rare regions (regions where the fluctuations of the random potential is far away from the mean fluctuations). The limitation of the algorithm is given by the localization length of the eigenstates, not the system size. The localization length of the eigenstates depends on the considered potential (microscopic details).
 
 
-##Model implemented: 
+## Model implemented: 
 Disordered tight-binding model in 1D:
 
 <img src="https://latex.codecogs.com/svg.image?H&space;=&space;\sum_{i=1}^L&space;h_i&space;n_i&space;&plus;&space;\sum_{i=1}^{L-1}&space;J_{i,i&plus;1}&space;(a_i^\dag&space;a_{i&plus;1}&space;&plus;&space;a_{i&plus;1}^\dag&space;a_{i})&space;&plus;&space;J_z&space;\sum_{i=1}^{L-1}&space;n_i&space;n_{i&plus;1}" title="https://latex.codecogs.com/svg.image?H = \sum_{i=1}^L h_i n_i + \sum_{i=1}^{L-1} J_{i,i+1} (a_i^\dag a_{i+1} + a_{i+1}^\dag a_{i}) + J_z \sum_{i=1}^{L-1} n_i n_{i+1}" />
@@ -13,7 +13,7 @@ Disordered tight-binding model in 1D:
 Other models can be studied, with the corresponding changes of the matrix to diagonalize and the calculation of the variance of the eigenstates of the subsystems.
 
 
-##Observables of interest:
+## Observables of interest:
 
 
 The observables obtained are:
@@ -48,7 +48,7 @@ The observables obtained are:
 
 
 
-##Functions:
+## Functions:
 There are 4 fundamental functions, 2 dealing with the Anderson model (in lib\_N1.py) and 2 functions dealing with the N=2 particles scenario (in lib\_N2.py).
 
 1. DaC\_eigen\_N1( system, subsystem, potential, hopping ; variance = 1e-32, cutoff\_overlap = 1e-7, cutoff\_E = 1e-7 )
@@ -85,13 +85,13 @@ Calculate the time evolution of the observable Participation Ratio (PR) for seve
 
 
 
-##How to use it: 
+## How to use it: 
 
 Examples of how to use the implemented functions are given in the files test\_functions\_N1.py and test\_functions\_N2.py.
 
 
 
-##Future work:
+## Future work:
 
 - There is paper under work, where the physics of the few-particles physics and the more technical aspects of the code will be explained and justified in detail.
 
