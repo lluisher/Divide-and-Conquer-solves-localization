@@ -5,6 +5,11 @@ Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigensta
 Study physical properties of arbitrarily large systems, reducing the effect of boundary conditions and dealing with apperance of, and effects due to, rare regions (regions where the fluctuations of the random potential is far away from the mean fluctuations). The limitation of the algorithm is given by the localization length of the eigenstates, not the system size. The localization length of the eigenstates depends on the considered potential (microscopic details).
 
 
+## How to use it: 
+
+Examples of how to use the implemented functions are given in the files test\_functions\_N1.py and test\_functions\_N2.py.
+
+
 ## Model implemented: 
 Disordered tight-binding model in 1D:
 
@@ -82,12 +87,6 @@ It returns 4 arrays:
 
 Calculate the time evolution of the observable Participation Ratio (PR) for several times of interest, given in the numpy array *time*, where the initial state is a wavefunction with the two particles localized in consecutive sites of the system. The system has *system* sites, with values of the on-site potential given in *potential*, the hopping coefficient, constant in each site, is given in *Jxx* and the interaction strength is *J_z*. An upper bound of the error in the PR is given by the value of *precision*.
 
-
-
-
-## How to use it: 
-
-Examples of how to use the implemented functions are given in the files test\_functions\_N1.py and test\_functions\_N2.py.
 
 
 
