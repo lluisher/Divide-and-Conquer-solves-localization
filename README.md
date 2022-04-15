@@ -1,6 +1,10 @@
 # Divide-and-Conquer-solves-localization
 Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigenstates and the dynamical evolution of states out-of-equilibrium in arbitrarily large systems with few (1 or 2) particles.
 
+
+<img src="https://render.githubusercontent.com/render/math?math={P(A|B)=\frac{\P(B|A)\P(A)}{\P(B|A)\P(A)\%2BP(B|\neg A)\P(\neg A)}}##gh-light-mode-only">
+<img src="https://render.githubusercontent.com/render/math?math={\color{white}\P(A|B)=\frac{\P(B|A)\P(A)}{\P(B|A)\P(A)\%2BP(B|\neg A)\P(\neg A)}}#gh-dark-mode-only">
+
 ## Aim: 
 Study physical properties of arbitrarily large systems, reducing the effect of boundary conditions and dealing with apperance of, and effects due to, rare regions (regions where the fluctuations of the random potential is far away from the mean fluctuations). The limitation of the algorithm is given by the localization length of the eigenstates, not the system size. The localization length of the eigenstates depends on the considered potential (microscopic details).
 
