@@ -5,9 +5,14 @@ Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigensta
 ## Aim: 
 Study physical properties of arbitrarily large systems, reducing the effect of boundary conditions and dealing with apperance of, and effects due to, rare regions (regions where the fluctuations of the random potential is far away from the mean fluctuations). The limitation of the algorithm is given by the localization length of the eigenstates, not the system size. The localization length of the eigenstates depends on the considered potential (microscopic details).
 
-## How to use it: 
+
+## How to use it and example of results: 
 
 Examples of how to use the implemented functions are given in the files test\_functions\_N1.py and test\_functions\_N2.py.
+
+Example of the data we can generate thanks to the large statistics, from obtaining the full set of eigenvalues of a matrix of dimension 10⁹ x 10⁹
+![4D_box_W5d0](https://user-images.githubusercontent.com/102743817/166163744-609af944-6b48-43c7-bf2c-d319e64a826c.png)
+
 
 
 ## Model implemented: 
