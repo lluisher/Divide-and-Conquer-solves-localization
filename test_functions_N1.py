@@ -16,7 +16,6 @@ from lib_N1 import DaC_eigen_N1, DaC_dyn_N1, energies_ED, PR_ED
 import random
 import numpy as np
 
-
 L = 600
 M = 200                       
 W = 10
