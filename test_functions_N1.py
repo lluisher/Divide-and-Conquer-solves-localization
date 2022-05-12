@@ -25,6 +25,8 @@ hopping = np.ones(L-1)
 
 E, PR = DaC_eigen_N1( system = L, subsystem = M, potential = potential, hopping = hopping )
 
+N = len(E)
+
 print("Obtained number of eigenstates with DaC:", N)
 
 
