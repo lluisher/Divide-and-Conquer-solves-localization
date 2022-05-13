@@ -12,6 +12,7 @@ from scipy.linalg import eig_banded
 
 from itertools import combinations
 
+from numba import jit
 
 def create_connections(M, M2):
 
@@ -441,8 +442,6 @@ def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutof
 ###########################DYNAMICS
 ###########################
 
-
-from numba import jit
 
 @jit(nopython=True)
 def time_evolution_matrix(A, new_E, T):
