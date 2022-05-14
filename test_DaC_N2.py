@@ -49,7 +49,7 @@ def test_dyn_N2():
 
     M = 30                       
 
-    L_array = [50, 60]
+    L_array = [45, 50]
     W_array = [40, 50]
 
     for L in L_array:
