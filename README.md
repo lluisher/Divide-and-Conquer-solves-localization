@@ -8,7 +8,7 @@ Study physical properties of arbitrarily large systems, reducing the effect of b
 
 ## How to use it and example of results: 
 
-Examples of how to use the implemented functions are given in the files test\_functions\_N1.py and test\_functions\_N2.py.
+Examples of how to use the implemented functions are given in the files example\_DaC\_N1.py and example\_DaC\_N2.py. The accuracy is tested in files test\_DaC\_N1.py and test\_DaC\_N2.py.
 
 Example of the data we can generate thanks to the large statistics, from obtaining the full set of eigenvalues of a matrix of dimension 10⁹ x 10⁹
 ![4D_box_W5d0](https://user-images.githubusercontent.com/102743817/166163744-609af944-6b48-43c7-bf2c-d319e64a826c.png)
@@ -106,7 +106,7 @@ It returns 4 arrays:
 
 4. DaC\_dyn\_N2 ( system, subsystem, potential, Jxx, Jz, time, precision; variance = 1e-32, min\_jump = 1, error\_propagation\_ratio = 10 )
 
-Calculate the time evolution of the observable Participation Ratio (PR) for several times of interest, given in the numpy array *time*, where the initial state is a wavefunction with the two particles localized in consecutive sites of the system. The system has *system* sites, with values of the on-site potential given in *potential*, the hopping coefficient, constant in each site, is given in *Jxx* and the interaction strength is *J_z*. An upper bound of the error in the PR is given by the value of *precision*.
+Calculate the time evolution of the observable Participation Ratio (PR) for several times of interest, given in the numpy array *time*, where the initial state is a wavefunction with the two particles localized in consecutive sites of the system. The system has *system* sites, with values of the on-site potential given in *potential*, the hopping coefficient, constant in each site, is given in *Jxx* and the interaction strength is *Jz*. An upper bound of the error in the PR is given by the value of *precision*.
 
 
 
