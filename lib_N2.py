@@ -650,8 +650,9 @@ def DaC_N2_dyn( potential, Jxx, Jz, subsystem, precision, time, system, variance
                 real_site = np.concatenate( (real_site, np.arange(how_many) + site_now) )
 
         site_now = site_now + max( how_many, min_jump )
-
-    real_site = real_site.astype(int)
+    
+    if(len(real_site) != 0):
+        real_site = real_site.astype(int)
 
     return PR, real_site
 
@@ -817,6 +818,42 @@ def fun_give_back_observables(psi, parameters, N):
     Observables[4] = fun_prob_together(psi, parameters[4])
 
     return Observables
+
+
+
+
+
+#######CHECK WITH ED
+
+
+
+def PR_ED_N2( potential, Jxx, time_interest, Jz ):
+
+    L = len(potential)
+
+    Vertex_new, inv_Vertex_new, hopping, band_width = order_RCM( L )
+
+    auxi_left, auxi_right, where_together = find_auxi( L )
+
+    J_r = np.array([0, 0])
+
+    E_new, v_new = E_v_subset( [potential, Jxx, J_r, Jz, L, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, 1] )
+
+    all_sites = np.asarray( list( combinations(np.arange(L), 2) ) )
+
+    PR_T = np.zeros( (L-1, len(time_interest)) )
+
+    for j in range(0, L-1):
+
+        local_store = np.einsum("i, ik -> ki", v_new[:, where_together[j] ], v_new )
+        
+        final_r, final_c = time_evolution_matrix(local_store, E_new, time_interest )
+
+        final = final_r + final_c*1j
+            
+        PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
+
+    return PR_T
 
 
 
