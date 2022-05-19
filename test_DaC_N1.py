@@ -6,18 +6,20 @@ import numpy as np
 
 def check_eigenvalues_DaC_N1( L, M, W):
 
-    potential = np.random.uniform(-W, W, L)     
-    hopping = np.ones(L-1)                    
+    potential = np.random.uniform(-W, W, L)
+    hopping = np.ones(L-1)
 
-    E, PR = DaC_eigen_N1( system = L, subsystem = M, potential = potential, hopping = hopping )
+    E, PR, population = DaC_eigen_N1( system = L, subsystem = M, potential = potential, hopping = hopping )
 
     E = np.sort(E)
 
     if( len(E) == L and L < 6000):
-    
+
         energies = energies_ED( potential = potential, hopping = hopping)
         assert np.allclose( energies, E ) == True
 
+    if( len(E) == L ):
+        assert np.allclose( population, np.ones(L) ) == True
 
 
 def check_PR_dyn_N1( L, M, W ):
@@ -48,14 +50,14 @@ def check_PR_dyn_N1( L, M, W ):
 
 def test_eigen_N1():
 
-    M = 200                       
+    M = 200
 
     L_array = [600, 800]
     W_array = [10, 20]
 
     for L in L_array:
         for W in W_array:
-            
+
             check_eigenvalues_DaC_N1(L, M, W)
 
 
@@ -64,24 +66,12 @@ def test_eigen_N1():
 
 def test_dyn_N1():
 
-    M = 200                       
+    M = 200
 
     L_array = [600, 800]
     W_array = [10, 20]
 
     for L in L_array:
         for W in W_array:
-            
+
             check_PR_dyn_N1(L, M, W)
-
-
-
-
-
-
-
-
-
-
-
-

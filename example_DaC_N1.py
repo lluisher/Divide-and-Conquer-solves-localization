@@ -17,13 +17,14 @@ import random
 import numpy as np
 
 
-L = 600
-M = 200                       
+L = 700
+M = 200
 W = 10
-potential = np.random.uniform(-W, W, L)     
-hopping = np.ones(L-1)                    
+potential = np.random.uniform(-W, W, L)
+hopping = np.ones(L-1)
+shift = 0.4
 
-E, PR = DaC_eigen_N1( system = L, subsystem = M, potential = potential, hopping = hopping )
+E, PR, population = DaC_eigen_N1( system = L, subsystem = M, potential = potential, hopping = hopping, shift = shift )
 
 N = len(E)
 
@@ -34,10 +35,11 @@ if( len(E) == L and L < 5000):
     energies = energies_ED( potential = potential, hopping = hopping)
 
     E = np.sort(E)
-    
+
     print( "Maximum difference in the eigenvalues compared with ED:", np.amax( np.fabs(E - energies) ) )
 
-
+if( len(E) == L ):
+    print( "Infinity norm of (population - identity):", np.amax( np.fabs(population - np.ones(L)) ) )
 
 
 
@@ -53,18 +55,18 @@ if( len(E) == L and L < 5000):
 #min_jump, minimum shift between subsystems.
 #error_propagation_ratio, relates the maximum error amplitude wavefunction with the upper bound of the observable PR. DEFAULT  = 10.
 
-L = 500                           
+L = 500
 M = 200
 W = 10
-h = np.random.uniform(-W, W, L)     
+h = np.random.uniform(-W, W, L)
 Jxx = 1
-precision = 1e-4                    
-time = np.arange(0, 10, 0.5)          
+precision = 1e-4
+time = np.arange(0, 10, 0.5)
 
 
-variance = 1e-30                   
-min_jump = 5                        
-error_propagation_ratio = 10        
+variance = 1e-30
+min_jump = 5
+error_propagation_ratio = 10
 
 
 PR, sites = DaC_dyn_N1( system = L, subsystem = M, potential = h, Jxx = Jxx, precision = precision, time = time, variance = variance, min_jump = min_jump, error_propagation_ratio = error_propagation_ratio )
@@ -84,7 +86,3 @@ if( len(sites) == L and L < 5000):
         print("Maximum error PR smaller than needed precision. Great :)")
     else:
         print("ATTENTION! Error in PR exceeds needed precision! Try to reduce the cutoff of the variance, until precision is larger than the square root of the variance, or increase value of \"error_propagation_ratio\".")
-
-
-
-

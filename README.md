@@ -2,11 +2,11 @@
 Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigenstates and the dynamical evolution of states out-of-equilibrium in arbitrarily large systems with few (1 or 2) particles.
 
 
-## Aim: 
+## Aim:
 Study physical properties of arbitrarily large systems, reducing the effect of boundary conditions and dealing with apperance of rare regions, where the fluctuations of the random potential is far away from the mean fluctuations, and their effect. The limitation of the algorithm is given by the localization length of the eigenstates, not the system size. The localization length of the eigenstates depends on the considered potential (microscopic details).
 
 
-## How to use it and example of results: 
+## How to use it and example of results:
 
 Examples of how to use the implemented functions are given in the files example\_DaC\_N1.py and example\_DaC\_N2.py. The accuracy is tested in files test\_DaC\_N1.py and test\_DaC\_N2.py.
 
@@ -15,7 +15,7 @@ Example of the data we can generate thanks to the large statistics, from obtaini
 
 
 
-## Model implemented: 
+## Model implemented:
 Disordered tight-binding model in 1D:
 
 <img src="https://render.githubusercontent.com/render/math?math={H=\sum_{i=1}^L h_i n_i%2B\sum_{i=1}^{L-1}J_{i,i%2B1}(a_i^{\dagger} a_{i%2B 1}%2Ba_{i%2B 1}^\dagger a_{i})%2BJ_z\sum_{i=1}^{L-1}n_in_{i %2B 1}}#gh-light-mode-only">
@@ -77,11 +77,11 @@ The observables obtained are:
 ## Functions:
 There are 4 fundamental functions, 2 dealing with the Anderson model (in lib\_N1.py) and 2 functions dealing with the N=2 particles scenario (in lib\_N2.py).
 
-1. DaC\_eigen\_N1( system, subsystem, potential, hopping ; variance = 1e-32, cutoff\_overlap = 1e-7, cutoff\_E = 1e-7 )
+1. DaC\_eigen\_N1( system, subsystem, potential, hopping ; shift = 0, variance = 1e-32, cutoff\_overlap = 1e-7, cutoff\_E = 1e-7 )
 
 Calculate the eigenstate of the Anderson model of a system with *system* sites, with values of the on-site potential given in *potential* and the hopping terms given in *hopping* (entry i of *hopping* determines the hopping between site i an i+1), for a given subsystem of size *subsystem*.
 
-It returns 2 different arrays, one with the obtained eigenvalues and the other the values of the Participation Ratio of the obtained eigenvectors.
+It returns 3 different arrays, one with the obtained eigenvalues, the other the values of the Participation Ratio of the obtained eigenvectors and the last array contains the population in each site, which should be always one, if all eigenstate are obtained.
 
 
 2. DaC\_dyn\_N1 ( system, subsystem, potential, Jxx, precision, time; variance = 1e-32, min\_jump = 1, error\_propagation\_ratio = 10 )
@@ -96,9 +96,9 @@ It returns a 2D array, with the values of the Participation Ratio for the severa
 
 Calculate the eigenstates of the two interacting particle problem, in a system with *system* sites, which can be fit in a subsytem of size *subsystem*. The values of the on-site potential are given in *potential*, the hopping coefficient is *Jxx* and the interaction strength is *Jz*.
 
-It returns 4 arrays: 
+It returns 4 arrays:
 
-   - A 1D-array, with the energy (eigenvalues) of the eigenstates (eigenvectors). 
+   - A 1D-array, with the energy (eigenvalues) of the eigenstates (eigenvectors).
    - A 2D-array, in the 0-axis are 5 different observables and the 1-axis refers to each of the obtained eigenstates. The observables are, in order, the mean distance, the fluctuations of the Center-of-Mass, the Participation Ratio from density, the Participation Ratio in Fock space and the probability to find the two particles in consecutive sites.
    - The filling factor in the population of the sites (i,i+1), for all i, from the obtained eigenvectors from the DaC method
    - A 1D-array, indicating in which sites the obtained eigenvectors start
