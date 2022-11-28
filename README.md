@@ -1,5 +1,6 @@
 # Divide-and-Conquer-solves-localization
-Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigenstates and the dynamical evolution of states out-of-equilibrium in arbitrarily large systems with few (1 or 2) particles.
+Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigenstates and the dynamical evolution of states out-of-equilibrium in arbitrarily large systems with few (1 or 2) particles. For more details, please see the [paper in Arxiv](http://arxiv.org/abs/2211.13089).
+
 
 
 ## Aim:
@@ -112,7 +113,5 @@ Calculate the time evolution of the observable Participation Ratio (PR) for seve
 
 
 ## Future work:
-
-- There is paper under work, where the physics of the few-particles physics and the more technical aspects of the code will be explained and justified in detail.
 
 - Make a python package.
