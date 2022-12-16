@@ -3,7 +3,7 @@
 
 #IMPORTANT, SUBSYSTEM SIZE SHOULD BE EVEN.
 
-#Same subsystem except maybe the last.
+#Same subsystem size except maybe the last.
 
 
 import numpy as np
@@ -12,24 +12,26 @@ from scipy.linalg import eig_banded
 
 from itertools import combinations
 
+from numba import jit
+
 
 def create_connections(M, M2):
 
     Degree = np.ones( M2, dtype = int )
 
     Edges = []
-    
-    comb = np.asarray( list( combinations(np.arange(M), 2) ) )    
+
+    comb = np.asarray( list( combinations(np.arange(M), 2) ) )
     magnitude = comb[:, 0]*M + comb[:, 1]
 
     for i in range(0, M2):
 
         dif = np.fabs( magnitude[i] - magnitude )
-        
+
         need_add = np.arange(M2) [ np.logical_or(dif == 1, dif == M) ]
-    
+
         Edges.append( need_add )
-    
+
         Degree[i] = len(Edges[-1])
 
     return Edges, Degree
@@ -54,7 +56,7 @@ def order_RCM(M):
     how[0] = M2 - 1
 
     Q = np.array( [1], dtype = int )
-    
+
     missing = np.ones(M2, dtype = bool)
 
     missing[ [0, 1] ] = False
@@ -64,9 +66,9 @@ def order_RCM(M):
     while( counter != M2 ):
 
         R[counter] = Q[0]
-        
+
         how[ Q[0] ] = M2 - 1 - counter
-        
+
         extra = Edges[ Q[0] ] [missing[ Edges[ Q[0] ] ] ]
 
         extra = np.flip ( extra [ np.argsort( Degree[extra] ) ] )
@@ -96,11 +98,11 @@ def order_RCM(M):
 
     new_band_width = 0
     entries = np.zeros( M2, dtype = int)
-    
+
     for i in range(0, M2):
 
         new_band_width = max( new_band_width, np.amax( np.fabs(Edges_new[i] - i ) ) )
-        
+
 
 
     band_width = int(new_band_width)
@@ -111,9 +113,9 @@ def order_RCM(M):
 
     for j in range(0, M2):
         entries = Edges_new[j] - j
-            
+
         entries = entries[entries > 0]
-    
+
         hopping[ entries - 1, j ] = 1
 
 
@@ -131,17 +133,17 @@ def order_RCM(M):
 def find_auxi(Lred):
 
     L2red = int(Lred*(Lred-1)*0.5)
-    
+
     auxi_left = np.arange(0, Lred - 1)
 
     where_together = np.zeros(Lred-1, dtype = int)
-    
+
     where_together[1:] = np.cumsum( np.arange(Lred-1, 1, -1) )
-    
-    auxi_right = np.zeros(Lred-1, dtype = int)    
-    
+
+    auxi_right = np.zeros(Lred-1, dtype = int)
+
     auxi_right[:-1] = where_together[1:] - 1
-    
+
     auxi_right[-1] = where_together[-1]
 
 
@@ -163,7 +165,7 @@ def check_variance_N2 (x):
     (J1, J2, v, auxi_left, auxi_right) = x
 
     vari = J2*J2* ( np.sum( v[:, auxi_right]**2, axis = 1 ) ) + J1*J1*( np.sum( v[:, auxi_left]**2, axis = 1 ) )
-    
+
     return vari
 
 
@@ -178,7 +180,7 @@ def check_variance_N2 (x):
 def generate_how_compare(start_left, start_right, end_left, end_right):
 
     M = end_left - start_left + 1
-    
+
     l2 = int( M*(M-1)*0.5 )
 
     M_tilde = end_left - start_right + 1
@@ -215,7 +217,7 @@ def compare(E_left, v_left, E_center, v_center, which_old, which_new, tol_overla
 
     sure_old = np.sum( dif_E, axis = 1) == 0
     sure_new = np.sum( dif_E, axis = 0) == 0
-    
+
     dif_E = 0
 
     store_v_new = v_center[sure_new]
@@ -237,9 +239,9 @@ def compare(E_left, v_left, E_center, v_center, which_old, which_new, tol_overla
 
         v_center = v_center[ real ]
         E_center = E_center[ real ]
-        
+
     if(np.sum(sure_new) != 0):
-    
+
         v_center = np.concatenate( (v_center, store_v_new), axis = 0 )
         E_center = np.concatenate( (E_center, store_E_new) )
 
@@ -298,15 +300,15 @@ def E_v_subset(x):
 
     J0 = J_hops[ 0 ]
     J1 = J_hops[ -1 ]
-    
+
     vari = check_variance_N2 ( [J0, J1, vred1_r, auxi_left, auxi_right ] )
 
     which = vari < variance
-    
+
     number = np.sum(which)
-    
+
     E = epsired_r[which]
-    
+
     v = vred1_r[which]
 
     if(number == 0):
@@ -348,7 +350,8 @@ def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutof
 
     E_local = np.zeros(0)
     begin_local = np.zeros(0, dtype = int)
-    Observables = np.zeros((5,0))
+    #Create object, with no data in it
+    Observables = Observables_class()
 
     first_site_r = 0
 
@@ -362,12 +365,12 @@ def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutof
 
     popu[ first_site_r : last_site_r ] = popu[ first_site_r : last_site_r ] + np.sum( v_new[:, where_together]**2, axis = 0 )
 
-    Observables = fun_give_back_observables(v_new, parameters, len(E_new))
+    Observables = Observables + fun_give_back_observables(v_new, parameters, len(E_new))
 
     E_local = np.concatenate( (E_local, E_new) )
     begin_local = np.concatenate( (begin_local, np.zeros(len(E_new), dtype = int) + first_site_r )  )
 
-    #Store 
+    #Store
     previous_eigen = v_new
     previous_E = E_new
     start_previous_interval = np.zeros(1, dtype = int) + first_site_r
@@ -378,7 +381,7 @@ def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutof
     first_site_r = min ( first_site_r + min_jump, L - M_sub )
 
 
-    while( first_site_r <= L - M_sub):                   
+    while( first_site_r <= L - M_sub):
 
         last_site_r = first_site_r + M_sub - 1
 
@@ -406,7 +409,8 @@ def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutof
         if(len(E_new) != 0):
             popu[ first_site_r : last_site_r ] = popu[ first_site_r : last_site_r ] + np.sum( v_new[:, where_together]**2, axis = 0 )
 
-            Observables = np.concatenate( ( Observables, fun_give_back_observables(v_new, parameters, len(E_new)) ), axis = 1 )
+            #Add new entries to the Object Observables
+            Observables =  Observables + fun_give_back_observables(v_new, parameters, len(E_new))
 
             E_local = np.concatenate( (E_local, E_new) )
             begin_local = np.concatenate( (begin_local, np.zeros(len(E_new), dtype = int) + first_site_r )  )
@@ -418,7 +422,7 @@ def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutof
         previous_E = np.concatenate( (previous_E, E_new) )
         how_many = np.concatenate( (how_many, [len(E_new)] ) )
         start_previous_interval = np.concatenate ( (start_previous_interval, [first_site_r]) )
-        end_previous_interval = np.concatenate ( (end_previous_interval, [last_site_r]) )  
+        end_previous_interval = np.concatenate ( (end_previous_interval, [last_site_r]) )
 
 
         first_site_r = min ( first_site_r + min_jump, L - M_sub )
@@ -428,7 +432,7 @@ def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutof
         x = np.argmax( end_previous_interval - 1 > first_site_r )           #Eliminate also if only 1 site overlap
         previous_eigen = previous_eigen[np.sum(how_many[:x]) : ]
         previous_E = previous_E[np.sum(how_many[:x]) : ]
-        
+
         start_previous_interval = start_previous_interval[x:]
         end_previous_interval = end_previous_interval[x:]
         how_many = how_many[x:]
@@ -442,7 +446,6 @@ def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutof
 ###########################
 
 
-from numba import jit
 
 @jit(nopython=True)
 def time_evolution_matrix(A, new_E, T):
@@ -459,15 +462,15 @@ def time_evolution_matrix(A, new_E, T):
 
             r_aux = 0
             c_aux = 0
-            
+
             for k in range(N_internal):
-            
+
                 r_aux = r_aux + A[i,k]*np.cos(new_E[k]*T[j])
                 c_aux = c_aux - A[i,k]*np.sin(new_E[k]*T[j])
 
             final_r[i,j] = r_aux
             final_c[i,j] = c_aux
-    
+
     return final_r, final_c
 
 
@@ -477,9 +480,9 @@ def dynamics_site_first(x):
     (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation_ratio) = x
 
     l0 = len(h)
-    
-    error_ampl = epsilon/(error_propagation_ratio*l0*3)                 
-    
+
+    error_ampl = epsilon/(error_propagation_ratio*l0*3)
+
     H_correct = banded_H(h, Jxx, Jz, l0, permutation, hopping, width )
 
     epsired_r, vred_r = eig_banded( H_correct, lower = True, overwrite_a_band = True, check_finite = False )
@@ -489,9 +492,9 @@ def dynamics_site_first(x):
     vari = check_variance_N2 ( [J1, J2, vred1_r, auxi_left, auxi_right ] )
 
     which = vari < max_va
-    
+
     number = np.sum(which)
-    
+
     new_E = epsired_r[which]
 
     new_v = vred1_r[which]
@@ -518,29 +521,29 @@ def dynamics_site_first(x):
         PR_T = np.zeros( (how_many, len(T)) )
 
         for j in range(0, how_many):
-            
+
             maybe = maybe_big[:, j]
-            
+
             local_store = new_v[maybe, where_together[delta+j] ][:, np.newaxis] * new_v[maybe]
-            
+
             relevant_sites = np.sum( local_store**2, axis = 0 ) > error_ampl**2
-            
+
             local_store = local_store[:, relevant_sites]
-            
+
             relevant_eigen = np.sum( local_store**2  > (error_ampl**2)/(np.sum(maybe)), axis = 1 ) > 0
-            
-            maybe[maybe] = relevant_eigen            
-            
+
+            maybe[maybe] = relevant_eigen
+
             local_store = local_store[relevant_eigen].T
-            
+
             final_r, final_c = time_evolution_matrix(local_store, new_E[maybe], T )
 
             final = final_r + final_c*1j
-            
+
             final_r = 0
             final_c = 0
             local_store = 0
-            
+
             PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
 
 
@@ -559,14 +562,14 @@ def cal_PR_density(psi, all_sites, relevant_sites):
 
     start = all_sites[relevant_sites, 0]
     end = all_sites[relevant_sites, 1]
-    
+
     L = end.max() - start.min() + 1
 
     end = end - start.min()
     start = start - start.min()
 
     density = np.zeros( ( L, len(psi[0]) ) )
-    
+
     for i in range(0, L):
         how = np.zeros( np.sum(relevant_sites) , dtype = bool)
         how [ np.logical_or( start == i, end == i) ] = True
@@ -577,7 +580,7 @@ def cal_PR_density(psi, all_sites, relevant_sites):
     PR = 1/np.sum(density**2, axis = 0)
 
     return PR
-  
+
 
 
 
@@ -600,18 +603,18 @@ def DaC_N2_dyn( potential, Jxx, Jz, subsystem, precision, time, system, variance
 
     if(min_jump == 0):
         min_jump = 0.5*l0
-    
+
     PR = []
     real_site = []
     site_now = 0
-    
+
     auxi_left, auxi_right, where_together = find_auxi(l0)
-    
+
     Vertex_new, inv_Vertex_new, hopping, band_width = order_RCM(l0)
-    
+
     all_sites = np.asarray( list( combinations(np.arange(l0), 2) ) )
-    
-    
+
+
     while( site_now < L-1 ):
 
         if( site_now <= 0.5*l0 ):
@@ -650,7 +653,7 @@ def DaC_N2_dyn( potential, Jxx, Jz, subsystem, precision, time, system, variance
                 real_site = np.concatenate( (real_site, np.arange(how_many) + site_now) )
 
         site_now = site_now + max( how_many, min_jump )
-    
+
     if(len(real_site) != 0):
         real_site = real_site.astype(int)
 
@@ -683,7 +686,7 @@ def fun_parameters(M):
     which_dist = np.zeros( np.sum(np.arange(M-1, 0, -1)) , dtype = int)
 
     counter = 0
-    
+
     for i in range(M-1, 0, -1):
 
         which_dist[counter:counter+i] = np.arange(1,i+1)
@@ -692,11 +695,11 @@ def fun_parameters(M):
     aux_parameters.append( which_dist )
 
     #CoM
-    
+
     CoM = np.zeros( M2 )
 
     counter = 0
-    
+
     for i in range(0, M-1):
 
         CoM[ counter:counter + M - i -1 ] = i + np.arange(i + 1, M)
@@ -704,7 +707,7 @@ def fun_parameters(M):
 
     CoM = CoM/2
 
-    aux_parameters.append( CoM )    
+    aux_parameters.append( CoM )
 
 
     #PR den
@@ -715,7 +718,7 @@ def fun_parameters(M):
     how_density = np.zeros ( (M, M-1), dtype =  int )
 
     for i in range(0, M-1):
-    
+
         how_density[i][:start[i+1] - start[i]] = np.arange(start[i], start[i+1] )
 
         if(i > 1):
@@ -724,15 +727,15 @@ def fun_parameters(M):
 
     how_density[-1] = np.cumsum( np.append (M-2, np.arange(M-2, 0, -1) ) )
 
-    
-    
+
+
     aux_parameters.append(how_density)
     aux_parameters.append( np.array(M) )
-    
+
     #Prob together
 
     where_together = np.zeros(M-1, dtype = int)
-    
+
     where_together[1:] = np.cumsum( np.arange(M-1, 1, -1) )
 
 
@@ -750,7 +753,7 @@ def fun_parameters(M):
 def fun_mean_dist(psi, which_dist):
 
     d = np.sum( (psi**2)*which_dist, axis = 1)
-    
+
     return d
 
 
@@ -780,15 +783,15 @@ def fun_cal_PR_density(psi, how_density, L):
 
     PR = 1/np.sum(density**2, axis = 1)
 
-    return PR    
+    return PR
 
-    
+
 #Calculate the PR in Fock space, vectors stored as rows of matrix psi
 def fun_cal_PR_Fock(psi):
 
     PR = 1/np.sum(psi**4, axis = 1)
 
-    return PR    
+    return PR
 
 
 
@@ -798,24 +801,38 @@ def fun_cal_PR_Fock(psi):
 def fun_prob_together(psi, where_together):
 
     P = np.sum ( psi[:, where_together]**2, axis = 1 )
-    
+
     return P
+
+
+#Define a class, with observables as attributes
+
+class Observables_class():
+    '''Class with the different quantities of interest'''
+    def __init__(self, meanDist=np.zeros(0), flucCoM=np.zeros(0), PRDensity=np.zeros(0), PRFock=np.zeros(0), probTogether=np.zeros(0)):
+        self.meanDist = meanDist
+        self.flucCoM = flucCoM
+        self.PRDensity = PRDensity
+        self.PRFock = PRFock
+        self.probTogether = probTogether
+
+    #Override + symbol, to concatenate two of the objects
+    def __add__(self, other):
+        new_dist = np.concatenate( (self.meanDist, other.meanDist) )
+        new_CoM = np.concatenate( (self.flucCoM, other.flucCoM) )
+        new_PR_Density = np.concatenate( (self.PRDensity, other.PRDensity) )
+        new_PR_Fock = np.concatenate( (self.PRFock, other.PRFock) )
+        new_prob = np.concatenate( (self.probTogether, other.probTogether) )
+
+        return Observables_class( new_dist, new_CoM, new_PR_Density, new_PR_Fock, new_prob )
+
 
 
 def fun_give_back_observables(psi, parameters, N):
 
-    Observables = np.zeros( (5, N) )
-    
-    #Calculate mean distance
-    Observables[0] = fun_mean_dist( psi, parameters[0] )
-    #Calculate fluctuations of the CoM
-    Observables[1] = fun_fluc_CoM ( psi, parameters[1] )
-    #Calculate PR in real space
-    Observables[2] = fun_cal_PR_density( psi, parameters[2], parameters[3] )
-    #Calculate PR in Fock space
-    Observables[3] = fun_cal_PR_Fock(psi)
-    #Calculate probability particles together
-    Observables[4] = fun_prob_together(psi, parameters[4])
+    Observables = Observables_class(fun_mean_dist( psi, parameters[0] ), fun_fluc_CoM ( psi, parameters[1] ),
+                    fun_cal_PR_density( psi, parameters[2], parameters[3] ), fun_cal_PR_Fock(psi),
+                    fun_prob_together(psi, parameters[4]))
 
     return Observables
 
@@ -846,18 +863,11 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
     for j in range(0, L-1):
 
         local_store = np.einsum("i, ik -> ki", v_new[:, where_together[j] ], v_new )
-        
+
         final_r, final_c = time_evolution_matrix(local_store, E_new, time_interest )
 
         final = final_r + final_c*1j
-            
+
         PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
 
     return PR_T
-
-
-
-
-
-
-
