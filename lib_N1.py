@@ -3,6 +3,8 @@ import numpy as np
 
 from scipy.linalg import eigh_tridiagonal
 
+from classes_DaC import System_Parameters_Anderson, Technical_Parameters_Anderson
+
 
 def energies_ED( potential, hopping ):
 
@@ -66,20 +68,19 @@ def check_variance_N1 (x):
 
 
 
-def DaC_eigen_N1( potential, hopping, system, subsystem, shift = 0, variance = 1e-32, cutoff_overlap = 1e-7, cutoff_E = 1e-7):
+def DaC_eigen_N1( parameters_system, parameters_technical):
 
-    h = potential
-    J = hopping
-    L = system
-    M = subsystem
+    h = parameters_system.potential
+    J = parameters_system.hopping_dist
+    L = parameters_system.system
+    M = parameters_technical.subsystem
+    shift = parameters_technical.shift
+    jump = int(shift*M)
 
-    J = np.concatenate( ([0], np.concatenate((J, [0]))) )
 
-    if( shift == 0):
-        jump = int(0.5*M)
-    else:
-        jump = int(shift*M)
-
+    cutoff_variance = parameters_technical.cutoff_variance
+    cutoff_overlap = parameters_technical.cutoff_overlap
+    cutoff_E = parameters_technical.cutoff_E
 
     E_local = np.zeros( L )
     PR_local = np.zeros( L )
@@ -95,7 +96,7 @@ def DaC_eigen_N1( potential, hopping, system, subsystem, shift = 0, variance = 1
     J0 = J[ 0 ]
     J1 = J[ M ]
     vari = check_variance_N1 ( [J0, J1, V ] )
-    which = vari < variance
+    which = vari < cutoff_variance
 
     E_old = E[which]
     v_old = V[which]
@@ -126,7 +127,7 @@ def DaC_eigen_N1( potential, hopping, system, subsystem, shift = 0, variance = 1
         J0 = J[ first ]
         J1 = J[ last ]
         vari = check_variance_N1 ( [J0, J1, V ] )
-        which = vari < variance
+        which = vari < cutoff_variance
 
         E_new = E[which]
         v_new = V[which]

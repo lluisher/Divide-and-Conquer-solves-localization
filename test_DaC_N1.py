@@ -2,20 +2,28 @@
 from lib_N1 import DaC_eigen_N1, DaC_dyn_N1, energies_ED, PR_ED
 import random
 import numpy as np
+from classes_DaC import System_Parameters_Anderson, Technical_Parameters_Anderson
+
 
 
 def check_eigenvalues_DaC_N1( L, M, W):
 
-    potential = np.random.uniform(-W, W, L)
-    hopping = np.ones(L-1)
 
-    E, PR, population = DaC_eigen_N1( system = L, subsystem = M, potential = potential, hopping = hopping )
+    potential = np.random.uniform(-W, W, L)
+    hopping_dist = np.ones(L-1)
+
+    Physical_parameters = System_Parameters_Anderson( L, W, potential, hopping_dist)
+
+    DaC_paramenters = Technical_Parameters_Anderson(M)
+
+
+    E, PR, population = DaC_eigen_N1( Physical_parameters, DaC_paramenters )
 
     E = np.sort(E)
 
     if( len(E) == L and L < 6000):
 
-        energies = energies_ED( potential = potential, hopping = hopping)
+        energies = energies_ED( potential = potential, hopping = hopping_dist)
         assert np.allclose( energies, E ) == True
 
     if( len(E) == L ):

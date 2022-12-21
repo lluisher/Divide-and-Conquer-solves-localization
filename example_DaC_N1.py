@@ -16,23 +16,27 @@ from lib_N1 import DaC_eigen_N1, DaC_dyn_N1, energies_ED, PR_ED
 import random
 import numpy as np
 
+from classes_DaC import System_Parameters_Anderson, Technical_Parameters_Anderson
+
 
 L = 700
-M = 200
 W = 10
 potential = np.random.uniform(-W, W, L)
-hopping = np.ones(L-1)
-shift = 0.4
+hopping_dist = np.ones(L-1)
 
-E, PR, population = DaC_eigen_N1( system = L, subsystem = M, potential = potential, hopping = hopping, shift = shift )
+Physical_parameters = System_Parameters_Anderson( L, W, potential, hopping_dist)
 
+M = 200
+DaC_paramenters = Technical_Parameters_Anderson(M)
+
+E, PR, population = DaC_eigen_N1( Physical_parameters, DaC_paramenters)
 N = len(E)
 
 print("Obtained number of eigenstates with DaC:", N)
 
 
 if( len(E) == L and L < 5000):
-    energies = energies_ED( potential = potential, hopping = hopping)
+    energies = energies_ED( potential = potential, hopping = hopping_dist)
 
     E = np.sort(E)
 
@@ -41,6 +45,8 @@ if( len(E) == L and L < 5000):
 if( len(E) == L ):
     print( "Infinity norm of |population - identity|:", np.amax( np.fabs(population - np.ones(L)) ) )
 
+
+deffdv
 
 
 #INPUT FOR FUNCTION DaC_eigen_N1

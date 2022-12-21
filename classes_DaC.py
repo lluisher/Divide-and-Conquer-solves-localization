@@ -4,24 +4,32 @@ import numpy as np
 class System_Parameters_Anderson():
     '''
     Parameters describing the system.
-    size: Number of sites in the system (L)
+    system: Number of sites in the system (L)
     disorder: Disorder strength (W)
-    hopping: Site dependent hopping (Jxx)
+    hopping_strength: Hopping (Jxx)
+    hopping_anisotropy: Amount of anisotropy (Delta_Jxx)
     potential: Site dependent potential (h)
+    hopping_dist: Site dependent hopping (No hopping between first and last site)
     '''
 
-    def __init__(self, size=0, disorder=0, hopping=0, potential=0):
-        self.size = size
+    def __init__(self, system, disorder, potential, hopping_dist, hopping_strength = 1, hopping_anisotropy=0):
+        self.system = system
         self.disorder = disorder
-        self.hopping = hopping
         self.potential = potential
+        self.hopping_strength = hopping_strength
+        self.hopping_anisotropy = hopping_anisotropy
+        if(len(hopping_dist) == system + 1):
+            self.hopping_dist = hopping_dist
+        else:
+            self.hopping_dist = np.concatenate( ([0], np.concatenate((hopping_dist, [0]))) )
+
 
 
 
 
 class Technical_Parameters_Anderson():
     '''
-    Parameters needed for the Divide-and-Conquer algorithm ("unphysical").
+    Parameters needed for the Divide-and-Conquer algorithm ("unphysical" parameters).
     subsystem: Number of sites in the subsystem.
     shift: Shift between consecutive subsystems.
     cutoff_variance: Cutoff for the variance of the eigenstates (accept only those with lower variance).
@@ -30,7 +38,7 @@ class Technical_Parameters_Anderson():
     '''
 
 
-    def __init__(self, subsystem=0, shift = 0.5, cutoff_variance=1e-32, cutoff_overlap=1e-7, cutoff_E = 1e-7):
+    def __init__(self, subsystem, shift = 0.5, cutoff_variance=1e-32, cutoff_overlap=1e-7, cutoff_E = 1e-7):
         self.subsystem = subsystem
         self.shift = shift
         self.cutoff_variance = cutoff_variance
