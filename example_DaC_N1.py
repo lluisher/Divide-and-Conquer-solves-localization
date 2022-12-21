@@ -46,10 +46,10 @@ if( len(E) == L ):
     print( "Infinity norm of |population - identity|:", np.amax( np.fabs(population - np.ones(L)) ) )
 
 
-deffdv
+    fwfg
 
 
-#INPUT FOR FUNCTION DaC_eigen_N1
+#INPUT FOR FUNCTION DaC_dyn_N1
 
 #Size (L), size of the system.
 #Subsystem (M), size of the subsystem. M should be even

@@ -67,6 +67,50 @@ def check_variance_N1 (x):
     return vari
 
 
+def obtain_eigen_subsystem(first_site, last_site, h, J, cutoff_variance):
+
+    hred_r = h[ first_site:last_site ]
+    J_r = J[ first_site+1:last_site ]
+    E, V = eigh_tridiagonal(-hred_r, J_r)
+    V = V.T
+    J0 = J[ first_site ]
+    J1 = J[ last_site ]
+    vari = check_variance_N1 ( [J0, J1, V ] )
+    which = vari < cutoff_variance
+
+    E_subsystem = E[which]
+    v_subsystem = V[which]
+
+
+    return E_subsystem, v_subsystem
+
+
+def add_new_data_E_PR_Population_Number( popu, E, PR, number, first, last, E_new, v_new ):
+
+    popu[ first : last ] = popu[ first : last ] + np.sum( v_new**2, axis = 0 )
+    E[ number : number + len(E_new)] = E_new
+    PR[ number : number + len(E_new)] = 1/np.sum( v_new**4, axis = 1 )
+
+    number = number + len(E_new)
+
+    return popu, E, PR, number
+
+
+def eliminate_repetitions(how_many, previous_eigen, previous_E, v_new, E_new,
+                        M, previous_interval, last, cutoff_overlap, cutoff_E, i):
+
+    previous = np.sum(how_many[:i])
+    who = np.arange( previous, previous + how_many[i] )
+    v_new, E_new = compare_vec( previous_eigen[who], previous_E[who], v_new,
+            E_new, M, previous_interval[i], last, cutoff_overlap, cutoff_E )
+
+    return v_new, E_new
+
+
+def 
+
+
+
 
 def DaC_eigen_N1( parameters_system, parameters_technical):
 
@@ -89,23 +133,12 @@ def DaC_eigen_N1( parameters_system, parameters_technical):
     first = 0
     last = M
 
-    hred_r = h[ first:last ]
-    J_r = J[ first+1:last ]
-    E, V = eigh_tridiagonal(-hred_r, J_r)
-    V = V.T
-    J0 = J[ 0 ]
-    J1 = J[ M ]
-    vari = check_variance_N1 ( [J0, J1, V ] )
-    which = vari < cutoff_variance
+    E_old, v_old = obtain_eigen_subsystem(first, last, h, J, cutoff_variance)
 
-    E_old = E[which]
-    v_old = V[which]
+    number = 0
 
-    popu_local[ first : last ] = popu_local[ first : last ] + np.sum( v_old**2, axis = 0 )
-    E_local[ : len(E_old)] = E_old
-    PR_local[ : len(E_old)] = 1/np.sum( v_old**4, axis = 1 )
-
-    number = len(E_old)
+    popu_local, E_local, PR_local, number = add_new_data_E_PR_Population_Number(
+                    popu_local, E_local, PR_local, number, first, last, E_old, v_old)
 
 
     previous_eigen = v_old
@@ -118,35 +151,22 @@ def DaC_eigen_N1( parameters_system, parameters_technical):
     while ( first <= L - M ):
 
         last = first + M
-        hred_r = h[ first:last ]
 
-        J_r = J[ first+1:last ]
-        E, V = eigh_tridiagonal(-hred_r, J_r)
-
-        V = V.T
-        J0 = J[ first ]
-        J1 = J[ last ]
-        vari = check_variance_N1 ( [J0, J1, V ] )
-        which = vari < cutoff_variance
-
-        E_new = E[which]
-        v_new = V[which]
+        E_new, v_new = obtain_eigen_subsystem(first, last, h, J, cutoff_variance)
 
         if( len(E_new) != 0 ):
 
             for i in range(0, len(previous_interval) ):
-                previous = np.sum(how_many[:i])
-                who = np.arange( previous, previous + how_many[i] )
-                v_new, E_new = compare_vec( previous_eigen[who], previous_E[who], v_new, E_new, M, previous_interval[i], last, cutoff_overlap, cutoff_E )
+                v_new, E_new = eliminate_repetitions(how_many, previous_eigen,
+                                    previous_E, v_new, E_new, M, previous_interval,
+                                    last, cutoff_overlap, cutoff_E, i)
 
                 if(len(E_new) == 0):
                     break
 
-        popu_local[ first : last ] = popu_local[ first : last ] + np.sum( v_new**2, axis = 0 )
-        E_local[ number : number + len(E_new)] = E_new
-        PR_local[ number : number + len(E_new)] = 1/np.sum( v_new**4, axis = 1 )
+        popu_local, E_local, PR_local, number = add_new_data_E_PR_Population_Number(
+                        popu_local, E_local, PR_local, number, first, last, E_new, v_new)
 
-        number = number + len(E_new)
 
         if(first == L - M):
             break
@@ -166,8 +186,6 @@ def DaC_eigen_N1( parameters_system, parameters_technical):
 
         previous_interval = previous_interval[x:]
         how_many = how_many[x:]
-
-
 
 
     return E_local[:number], PR_local[:number], popu_local
