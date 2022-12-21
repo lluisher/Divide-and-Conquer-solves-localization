@@ -14,6 +14,8 @@ from itertools import combinations
 
 from numba import jit
 
+from classes_DaC import Observables_TIP_class
+
 
 def create_connections(M, M2):
 
@@ -351,7 +353,7 @@ def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutof
     E_local = np.zeros(0)
     begin_local = np.zeros(0, dtype = int)
     #Create object, with no data in it
-    Observables = Observables_class()
+    Observables = Observables_TIP_class()
 
     first_site_r = 0
 
@@ -805,32 +807,13 @@ def fun_prob_together(psi, where_together):
     return P
 
 
-#Define a class, with observables as attributes
 
-class Observables_class():
-    '''Class with the different quantities of interest'''
-    def __init__(self, meanDist=np.zeros(0), flucCoM=np.zeros(0), PRDensity=np.zeros(0), PRFock=np.zeros(0), probTogether=np.zeros(0)):
-        self.meanDist = meanDist
-        self.flucCoM = flucCoM
-        self.PRDensity = PRDensity
-        self.PRFock = PRFock
-        self.probTogether = probTogether
-
-    #Override + symbol, to concatenate two of the objects
-    def __add__(self, other):
-        new_dist = np.concatenate( (self.meanDist, other.meanDist) )
-        new_CoM = np.concatenate( (self.flucCoM, other.flucCoM) )
-        new_PR_Density = np.concatenate( (self.PRDensity, other.PRDensity) )
-        new_PR_Fock = np.concatenate( (self.PRFock, other.PRFock) )
-        new_prob = np.concatenate( (self.probTogether, other.probTogether) )
-
-        return Observables_class( new_dist, new_CoM, new_PR_Density, new_PR_Fock, new_prob )
 
 
 
 def fun_give_back_observables(psi, parameters, N):
 
-    Observables = Observables_class(fun_mean_dist( psi, parameters[0] ), fun_fluc_CoM ( psi, parameters[1] ),
+    Observables = Observables_TIP_class(fun_mean_dist( psi, parameters[0] ), fun_fluc_CoM ( psi, parameters[1] ),
                     fun_cal_PR_density( psi, parameters[2], parameters[3] ), fun_cal_PR_Fock(psi),
                     fun_prob_together(psi, parameters[4]))
 

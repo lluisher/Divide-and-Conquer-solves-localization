@@ -21,9 +21,9 @@ import numpy as np
 L = 100
 M = 50
 W = 10
-potential = np.random.uniform(-W, W, L)     
+potential = np.random.uniform(-W, W, L)
 Jxx = 1
-Jz = 1                    
+Jz = 1
 
 
 variance = 1e-16
@@ -32,7 +32,6 @@ cutoff_E = 1e-7
 min_jump = 25
 
 E, Obs, popu, begin_site = DaC_eigen_N2( system = L, subsystem = M, potential = potential, Jxx = Jxx, Jz = Jz, variance = variance, cutoff_overlap = cutoff_overlap, cutoff_E = cutoff_E, min_jump = min_jump )
-
 
 
 #INPUT FOR FUNCTION DaC_N2_dyn
@@ -47,7 +46,7 @@ E, Obs, popu, begin_site = DaC_eigen_N2( system = L, subsystem = M, potential = 
 #min_jump, the shift between consecutive subsystems. DEFAULT is 1.
 #error_propagation_ratio, constant to relate how error propagates from eigenfunctions to the observable. DEFAULT = 10
 
-#Return PR (a 2D-array with the Participation Ratio for the several times of interest, where the 0-axis refers to the initial states (maximum L-1) and the 1-axis refers to the instance of the time ) and real_sites, an array specifying which are the initial states of the wavefunctions solved. 
+#Return PR (a 2D-array with the Participation Ratio for the several times of interest, where the 0-axis refers to the initial states (maximum L-1) and the 1-axis refers to the instance of the time ) and real_sites, an array specifying which are the initial states of the wavefunctions solved.
 
 
 L = 200
@@ -69,6 +68,3 @@ PR, real_sites = DaC_N2_dyn( system = L, subsystem = M, potential = potential, J
 
 
 print("The number of initial wavefunctions whose time evolution can be calculated, with the required precision of 10^(%5.1f) and subsystem size %5.0f is %5.0f. The total number of initial states is %5.0f"%(np.log10(precision),M,len(real_sites),L-1) )
-
-
-

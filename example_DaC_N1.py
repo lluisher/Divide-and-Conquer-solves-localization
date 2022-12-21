@@ -39,7 +39,7 @@ if( len(E) == L and L < 5000):
     print( "Maximum difference in the eigenvalues compared with ED:", np.amax( np.fabs(E - energies) ) )
 
 if( len(E) == L ):
-    print( "Infinity norm of (population - identity):", np.amax( np.fabs(population - np.ones(L)) ) )
+    print( "Infinity norm of |population - identity|:", np.amax( np.fabs(population - np.ones(L)) ) )
 
 
 
