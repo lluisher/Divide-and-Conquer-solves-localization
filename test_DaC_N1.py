@@ -1,20 +1,25 @@
-
+'''
+File with the test, both for eigenstates and dynamics of the Anderson model.
+'''
 from lib_N1 import DaC_eigen_N1, DaC_dyn_N1, energies_ED, PR_ED
 import random
 import numpy as np
-from classes_DaC import System_Parameters_Anderson, Technical_Parameters_Anderson
+from classes_DaC import System_Parameters_Anderson, Technical_Parameters_Anderson_Eigen, Technical_Parameters_Anderson_Dyn
 
 
 
 def check_eigenvalues_DaC_N1( L, M, W):
-
+    '''
+    Check that we obtain the same eigenstates using DaC and ED
+    (system should be small enough to do ED).
+    '''
 
     potential = np.random.uniform(-W, W, L)
     hopping_dist = np.ones(L-1)
 
     Physical_parameters = System_Parameters_Anderson( L, W, potential, hopping_dist)
 
-    DaC_paramenters = Technical_Parameters_Anderson(M)
+    DaC_paramenters = Technical_Parameters_Anderson_Eigen(M)
 
 
     E, PR, population = DaC_eigen_N1( Physical_parameters, DaC_paramenters )
@@ -31,18 +36,23 @@ def check_eigenvalues_DaC_N1( L, M, W):
 
 
 def check_PR_dyn_N1( L, M, W ):
+    '''
+    Check that we obtain the dynamics using DaC and ED
+    (system should be small enough to do ED).
+    '''
 
     h = np.random.uniform(-W, W, L)
     Jxx = 1
     precision = 1e-4
+
+    Physical_parameters = System_Parameters_Anderson( L, W, h, hopping_strength=Jxx)
+
+    DaC_paramenters = Technical_Parameters_Anderson_Dyn(M, precision = precision)
+
     time = np.arange(0, 10, 0.5)
 
-    variance = 1e-30
-    min_jump = 1
-    error_propagation_ratio = 10
 
-
-    PR, sites = DaC_dyn_N1( system = L, subsystem = M, potential = h, Jxx = Jxx, precision = precision, time = time, variance = variance, min_jump = min_jump, error_propagation_ratio = error_propagation_ratio )
+    PR, sites = DaC_dyn_N1( Physical_parameters, time, DaC_paramenters )
 
 
     if( len(sites) == L and L < 6000):
@@ -57,7 +67,9 @@ def check_PR_dyn_N1( L, M, W ):
 
 
 def test_eigen_N1():
-
+    '''
+    Provide input for some test (eigenstates).
+    '''
     M = 200
 
     L_array = [600, 800]
@@ -73,7 +85,9 @@ def test_eigen_N1():
 
 
 def test_dyn_N1():
-
+    '''
+    Provide input for some test (dynamics).
+    '''
     M = 200
 
     L_array = [600, 800]
