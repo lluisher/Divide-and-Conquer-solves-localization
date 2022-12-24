@@ -5,7 +5,6 @@ import numpy as np
 
 from scipy.linalg import eigh_tridiagonal
 
-from classes_DaC import System_Parameters_Anderson, Technical_Parameters_Anderson_Eigen
 
 
 def energies_ED( potential, hopping ):
@@ -168,7 +167,7 @@ def DaC_eigen_N1( parameters_system, parameters_technical):
 
     * **parameters_system**: Object of the class **System_Parameters_Anderson**,
     containing physical parameters to describe the system.\n
-    * **parameters_technical**: Object of the class **Technical_Parameters_Anderson_Eigen**,
+    * **parameters_technical**: Object of the class **Technical_Parameters_Eigen**,
     containing several cutoffs and parameters needed in the DaC algorithm.\n
     It returns the set of obtained energies, PR and population in each site
     (to check that no overpopulation or missing population)
@@ -259,11 +258,11 @@ def dynamics_site_first(x):
     Calculate the time evolution of several initial states (localized in one site),
     for all the times of interest.
     '''
-    (delta, h, Jxx, J0, J1, max_va, T, epsilon, error_propagation_ratio) = x
+    (delta, h, Jxx, J0, J1, max_va, T, epsilon, error_propagation) = x
 
     l0 = len(h)
 
-    error_ampl = epsilon/( error_propagation_ratio*l0 )
+    error_ampl = epsilon/( error_propagation*l0 )
 
     E, V = eigh_tridiagonal(-h, np.zeros(len(h)-1) + Jxx)
 
@@ -310,7 +309,7 @@ def DaC_dyn_N1( parameters_system, time, parameters_technical ):
     * **parameters_system**: Object of the class **System_Parameters_Anderson**,
     containing physical parameters to describe the system.\n
     * **time**: Array with the times of interest.
-    * **parameters_technical**: Object of the class **Technical_Parameters_Anderson_Dyn**,
+    * **parameters_technical**: Object of the class **Technical_Parameters_Dyn**,
     containing several cutoffs and parameters needed in the DaC algorithm.\n
     It returns a 2D numpy array with the values of the PR for the different initial
     states (rows), at each time of interest (columns), together with the
@@ -326,7 +325,7 @@ def DaC_dyn_N1( parameters_system, time, parameters_technical ):
     epsilon = parameters_technical.precision
     variance = parameters_technical.cutoff_variance
     min_jump = parameters_technical.min_jump
-    error_propagation_ratio = parameters_technical.error_propagation_ratio
+    error_propagation = parameters_technical.error_propagation
 
     l0 = int(M*0.5)
 
@@ -354,7 +353,7 @@ def DaC_dyn_N1( parameters_system, time, parameters_technical ):
             J1 = Jxx
             first_dyn = l0
 
-        PR_local, how_many = dynamics_site_first([first_dyn, h_local, Jxx, J0, J1, variance, T, epsilon, error_propagation_ratio])
+        PR_local, how_many = dynamics_site_first([first_dyn, h_local, Jxx, J0, J1, variance, T, epsilon, error_propagation])
 
         if(how_many != 0):
             if(len(PR) == 0):

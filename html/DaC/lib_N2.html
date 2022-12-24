@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>DaC.lib_N2 API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Module with the functions to implement the DaC for
+the Two Interacting Particles (TIP) problem." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,15 +23,16 @@
 <h1 class="title">Module <code>DaC.lib_N2</code></h1>
 </header>
 <section id="section-intro">
+<p>Module with the functions to implement the DaC for
+the Two Interacting Particles (TIP) problem.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">#MORE THAN 3 SUBSETS ASSUMED
-
-#IMPORTANT, SUBSYSTEM SIZE SHOULD BE EVEN.
-
-#Same subsystem size except maybe the last.
+<pre><code class="python">&#39;&#39;&#39;
+Module with the functions to implement the DaC for
+the Two Interacting Particles (TIP) problem.
+&#39;&#39;&#39;
 
 
 import numpy as np
@@ -45,7 +47,10 @@ from classes_DaC import Observables_TIP_class
 
 
 def create_connections(M, M2):
-
+    &#39;&#39;&#39;
+    Determine which nodes are connected by the hopping, connects site (i,j)
+    to sites (i+-1, j) and (i, j+-1)
+    &#39;&#39;&#39;
     Degree = np.ones( M2, dtype = int )
 
     Edges = []
@@ -66,12 +71,11 @@ def create_connections(M, M2):
     return Edges, Degree
 
 
-
-#Give back edges in matrix form
-#Call it only once, no optimized. For M 300, it takes around 15&#39;&#39;
-
 def order_RCM(M):
-
+    &#39;&#39;&#39;
+    Implement the Reverse Cuthill-McHill (RCM) algorithm, to reduce the bandwidth
+    of the matrix.
+    &#39;&#39;&#39;
     M2 = int( M*(M-1)*0.5)
 
     Vertex = np.arange(M2, dtype = int)
@@ -152,15 +156,12 @@ def order_RCM(M):
 
 
 
-
-#
-#
-#Calculate which entries represent 1 particle in the extreme left (auxi left), extreme right (auxi right), where the 2 particles are next to each other (where together)
-#
-#
-
 def find_auxi(Lred):
-
+    &#39;&#39;&#39;
+    Calculate which entries represent 1 particle in the left edge of the
+    subsystem (auxi_left), the right end (auxi_right),
+    and where the 2 particles are next to each other (where_together)
+    &#39;&#39;&#39;
     L2red = int(Lred*(Lred-1)*0.5)
 
     auxi_left = np.arange(0, Lred - 1)
@@ -181,15 +182,10 @@ def find_auxi(Lred):
 
 
 
-
-
-#
-#
-#Check variance of a possible eigen.
-#
-#
-
 def check_variance_N2 (x):
+    &#39;&#39;&#39;
+    Check variance of a possible eigen.
+    &#39;&#39;&#39;
 
     (J1, J2, v, auxi_left, auxi_right) = x
 
@@ -198,16 +194,11 @@ def check_variance_N2 (x):
     return vari
 
 
-
-#
-#
-#Used when comparing eigenfunctions from different subset, give us the common entries. Assume that the subsystem have different sizes
-#
-#
-
-
 def generate_how_compare(start_left, start_right, end_left, end_right):
-
+    &#39;&#39;&#39;
+    Used when comparing eigenfunctions from different subset,
+    give us the common entries. Assume that the subsystem have different sizes.
+    &#39;&#39;&#39;
     M = end_left - start_left + 1
 
     l2 = int( M*(M-1)*0.5 )
@@ -234,14 +225,10 @@ def generate_how_compare(start_left, start_right, end_left, end_right):
     return which_old, which_new
 
 
-#
-#
-#Compare if eigenfunctions equal or not
-#
-#
-
 def compare(E_left, v_left, E_center, v_center, which_old, which_new, tol_overlap, Delta_E ):
-
+    &#39;&#39;&#39;
+    Compare if eigenfunctions equal or not
+    &#39;&#39;&#39;
     dif_E = np.fabs(np.tensordot(E_left, np.ones(len(E_center)), axes = 0) - np.tensordot(np.ones(len(E_left)), E_center, axes = 0)) &lt; Delta_E
 
     sure_old = np.sum( dif_E, axis = 1) == 0
@@ -281,9 +268,11 @@ def compare(E_left, v_left, E_center, v_center, which_old, which_new, tol_overla
 
 
 
-#Create banded matrix. Combine previous plus the diagonal. m subsystem size here
 
 def banded_H(h, Jxx, Jz, m, permutation, hopping, width ):
+    &#39;&#39;&#39;
+    Create banded matrix.
+    &#39;&#39;&#39;
 
     L = int( m*(m-1)*0.5)
 
@@ -306,16 +295,10 @@ def banded_H(h, Jxx, Jz, m, permutation, hopping, width ):
     return H
 
 
-
-
-
-#
-#
-#Give back number of eigenfunctions, energy, and eigenfunction itself (v)
-#
-#
-
 def E_v_subset(x):
+    &#39;&#39;&#39;
+    Give back the eigenvalues (E) and eigenfunction itself (v).
+    &#39;&#39;&#39;
 
     (hred_r, Jxx, J_hops, Jz, sub_size, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, variance) = x
 
@@ -347,22 +330,32 @@ def E_v_subset(x):
 
 
 
-#
-#
-#DaC N2.
-#
-#
+def DaC_eigen_N2( parameters_system, parameters_technical):
+
+    &#39;&#39;&#39;
+    Main function to obtain localized eigenstates of the TIP problem.\n
+
+    * **parameters_system**: Object of the class **System_Parameters_TIP**,
+    containing physical parameters to describe the system.\n
+    * **parameters_technical**: Object of the class **Technical_Parameters_Eigen**,
+    containing several cutoffs and parameters needed in the DaC algorithm.\n
+    It returns the set of obtained energies, the Observables of interest
+    (as an object of the class **Observables_TIP_class**),
+    the population in each consecutive site (i,i+1) and in which interval
+    each of the obtained eigenstate is localized.
+    &#39;&#39;&#39;
 
 
-def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutoff_overlap = 1e-7, cutoff_E = 1e-7, min_jump = 0 ):
 
-    h = potential
-    L = system
-    M_sub = subsystem
-    tol_overlap = cutoff_overlap
-    Delta_E = cutoff_E
-    if(min_jump &lt;= 0):
-        min_jump = int(0.5*M_sub)
+    h = parameters_system.potential
+    L = parameters_system.system
+    Jxx = parameters_system.hopping
+    Jz = parameters_system.interaction
+    M_sub = parameters_technical.subsystem
+    variance = parameters_technical.cutoff_variance
+    tol_overlap = parameters_technical.cutoff_overlap
+    Delta_E = parameters_technical.cutoff_E
+    min_jump = int(parameters_technical.shift * M_sub)
 
     popu = np.zeros(L - 1)
 
@@ -470,14 +463,18 @@ def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutof
 
 
 
-###########################
-###########################DYNAMICS
-###########################
+
 
 
 
 @jit(nopython=True)
 def time_evolution_matrix(A, new_E, T):
+    &#39;&#39;&#39;
+    Calculates the PR of the initial states (rows of A)
+    as a function of time (T).\n
+    It uses numba, to speed up the for loop.\n
+    We do not do a matrix multiplication to save memory.
+    &#39;&#39;&#39;
 
     N_rows = np.shape(A)[0]
     N_internal = len(new_E)
@@ -505,12 +502,15 @@ def time_evolution_matrix(A, new_E, T):
 
 
 def dynamics_site_first(x):
+    &#39;&#39;&#39;
+    Calculate the dynamics of the states in a given subsystem (interval).
+    &#39;&#39;&#39;
 
-    (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation_ratio) = x
+    (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation) = x
 
     l0 = len(h)
 
-    error_ampl = epsilon/(error_propagation_ratio*l0*3)
+    error_ampl = epsilon/(error_propagation*l0*3)
 
     H_correct = banded_H(h, Jxx, Jz, l0, permutation, hopping, width )
 
@@ -575,8 +575,6 @@ def dynamics_site_first(x):
 
             PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
 
-
-
     else:
         PR_T = []
         how_many = 0
@@ -588,7 +586,9 @@ def dynamics_site_first(x):
 
 
 def cal_PR_density(psi, all_sites, relevant_sites):
-
+    &#39;&#39;&#39;
+    Calculate the PR in real space.
+    &#39;&#39;&#39;
     start = all_sites[relevant_sites, 0]
     end = all_sites[relevant_sites, 1]
 
@@ -612,26 +612,33 @@ def cal_PR_density(psi, all_sites, relevant_sites):
 
 
 
+def DaC_N2_dyn( parameters_system, time, parameters_technical):
+    &#39;&#39;&#39;
+    Main function to calculate the dynamics in the TIP problem.\n
 
+    * **parameters_system**: Object of the class **System_Parameters_TIP**,
+    containing physical parameters to describe the system.\n
+    * **time**: Array with the times of interest.
+    * **parameters_technical**: Object of the class **Technical_Parameters_Dyn**,
+    containing several cutoffs and parameters needed in the DaC algorithm.\n
+    It returns a 2D numpy array with the values of the PR for the different initial
+    states (rows), at each time of interest (columns), together with the
+    corresponding initial site .
+    &#39;&#39;&#39;
 
-#
-#
-#Calculation of the time evolution of the PR
-#
-#
+    L = parameters_system.system
+    h = parameters_system.potential
+    Jxx = parameters_system.hopping
+    Jz = parameters_system.interaction
 
-def DaC_N2_dyn( potential, Jxx, Jz, subsystem, precision, time, system, variance = 1e-32, min_jump = 0, error_propagation_ratio = 10 ):
-
-
-    h = potential
-    l0 = subsystem
-    max_va = variance
-    epsilon = precision
     T = time
-    L = system
 
-    if(min_jump == 0):
-        min_jump = 0.5*l0
+    l0 = parameters_technical.subsystem
+    max_va = parameters_technical.cutoff_variance
+    epsilon = parameters_technical.precision
+    error_propagation = parameters_technical.error_propagation
+    min_jump = parameters_technical.min_jump
+    epsilon = parameters_technical.precision
 
     PR = []
     real_site = []
@@ -668,7 +675,7 @@ def DaC_N2_dyn( potential, Jxx, Jz, subsystem, precision, time, system, variance
             last_dyn = min(first_dyn + L-1 - site_now, l0)     #Not included
 
 
-        PR_local, how_many = dynamics_site_first( [first_dyn, last_dyn, h_local, Jxx, Jz, J1, J2, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation_ratio] )
+        PR_local, how_many = dynamics_site_first( [first_dyn, last_dyn, h_local, Jxx, Jz, J1, J2, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation] )
 
 
         if(how_many != 0):
@@ -689,23 +696,12 @@ def DaC_N2_dyn( potential, Jxx, Jz, subsystem, precision, time, system, variance
     return PR, real_site
 
 
-
-
-
-
-###########################
-###########################OBSERVABLES
-###########################
-
-
-
-
-
-#All the parameters needed to calculate the observables
-#First is for the mean distance, second for CoM, third and forth for PR den, fifth for probability together
-
-
 def fun_parameters(M):
+    &#39;&#39;&#39;
+    All the parameters needed to calculate the observables.\n
+    First is for the mean distance, second for CoM,
+    third and forth for PR density, fifth for probability together
+    &#39;&#39;&#39;
 
     M2 = int( M*(M-1)*0.5 )
 
@@ -774,21 +770,20 @@ def fun_parameters(M):
     return aux_parameters
 
 
-
-
-
-
-#Calculate the mean distance of state, stored as rows of matrix psi
 def fun_mean_dist(psi, which_dist):
+    &#39;&#39;&#39;
+    Calculate the mean distance of state, stored as rows of matrix psi.
+    &#39;&#39;&#39;
 
     d = np.sum( (psi**2)*which_dist, axis = 1)
 
     return d
 
 
-
-#Calculate the fluctuation of the CoM
 def fun_fluc_CoM(psi, which_CoM):
+    &#39;&#39;&#39;
+    Calculate the fluctuation of the CoM
+    &#39;&#39;&#39;
 
     mean = np.sum( (psi**2)*which_CoM, axis = 1 )
 
@@ -797,9 +792,10 @@ def fun_fluc_CoM(psi, which_CoM):
     return D_CoM
 
 
-#Calculate the PR from normalized density, vectors stored as rows of matrix psi
-
 def fun_cal_PR_density(psi, how_density, L):
+    &#39;&#39;&#39;
+    Calculate the PR from normalized density, vectors stored as rows of matrix psi.
+    &#39;&#39;&#39;
 
     density = np.zeros( ( len(psi[:, 0]) ,L) )
 
@@ -815,19 +811,20 @@ def fun_cal_PR_density(psi, how_density, L):
     return PR
 
 
-#Calculate the PR in Fock space, vectors stored as rows of matrix psi
 def fun_cal_PR_Fock(psi):
+    &#39;&#39;&#39;
+    Calculate the PR in Fock space, vectors stored as rows of matrix psi
+    &#39;&#39;&#39;
 
     PR = 1/np.sum(psi**4, axis = 1)
 
     return PR
 
 
-
-
-#Population on sites (i,i+1)
-
 def fun_prob_together(psi, where_together):
+    &#39;&#39;&#39;
+    Population on consecutive sites (i,i+1).
+    &#39;&#39;&#39;
 
     P = np.sum ( psi[:, where_together]**2, axis = 1 )
 
@@ -835,26 +832,26 @@ def fun_prob_together(psi, where_together):
 
 
 
-
-
-
 def fun_give_back_observables(psi, parameters, N):
+    &#39;&#39;&#39;
+    Calculate the observables of interest and store them in object of class
+    **Observables_TIP_class**.
+    &#39;&#39;&#39;
 
-    Observables = Observables_TIP_class(fun_mean_dist( psi, parameters[0] ), fun_fluc_CoM ( psi, parameters[1] ),
-                    fun_cal_PR_density( psi, parameters[2], parameters[3] ), fun_cal_PR_Fock(psi),
-                    fun_prob_together(psi, parameters[4]))
+    Observables = Observables_TIP_class(fun_mean_dist( psi, parameters[0] ),
+                        fun_fluc_CoM ( psi, parameters[1] ),
+                        fun_cal_PR_density( psi, parameters[2], parameters[3] ),
+                        fun_cal_PR_Fock(psi),
+                        fun_prob_together(psi, parameters[4]))
 
     return Observables
 
 
 
-
-
-#######CHECK WITH ED
-
-
-
 def PR_ED_N2( potential, Jxx, time_interest, Jz ):
+    &#39;&#39;&#39;
+    Calculate the PR using ED, only for small systems.
+    &#39;&#39;&#39;
 
     L = len(potential)
 
@@ -891,26 +888,55 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="DaC.lib_N2.DaC_N2_dyn"><code class="name flex">
-<span>def <span class="ident">DaC_N2_dyn</span></span>(<span>potential, Jxx, Jz, subsystem, precision, time, system, variance=1e-32, min_jump=0, error_propagation_ratio=10)</span>
+<span>def <span class="ident">DaC_N2_dyn</span></span>(<span>parameters_system, time, parameters_technical)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Main function to calculate the dynamics in the TIP problem.</p>
+<ul>
+<li>
+<p><strong>parameters_system</strong>: Object of the class <strong>System_Parameters_TIP</strong>,
+containing physical parameters to describe the system.</p>
+</li>
+<li>
+<p><strong>time</strong>: Array with the times of interest.</p>
+</li>
+<li><strong>parameters_technical</strong>: Object of the class <strong>Technical_Parameters_Dyn</strong>,
+containing several cutoffs and parameters needed in the DaC algorithm.</li>
+</ul>
+<p>It returns a 2D numpy array with the values of the PR for the different initial
+states (rows), at each time of interest (columns), together with the
+corresponding initial site .</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def DaC_N2_dyn( potential, Jxx, Jz, subsystem, precision, time, system, variance = 1e-32, min_jump = 0, error_propagation_ratio = 10 ):
+<pre><code class="python">def DaC_N2_dyn( parameters_system, time, parameters_technical):
+    &#39;&#39;&#39;
+    Main function to calculate the dynamics in the TIP problem.\n
 
+    * **parameters_system**: Object of the class **System_Parameters_TIP**,
+    containing physical parameters to describe the system.\n
+    * **time**: Array with the times of interest.
+    * **parameters_technical**: Object of the class **Technical_Parameters_Dyn**,
+    containing several cutoffs and parameters needed in the DaC algorithm.\n
+    It returns a 2D numpy array with the values of the PR for the different initial
+    states (rows), at each time of interest (columns), together with the
+    corresponding initial site .
+    &#39;&#39;&#39;
 
-    h = potential
-    l0 = subsystem
-    max_va = variance
-    epsilon = precision
+    L = parameters_system.system
+    h = parameters_system.potential
+    Jxx = parameters_system.hopping
+    Jz = parameters_system.interaction
+
     T = time
-    L = system
 
-    if(min_jump == 0):
-        min_jump = 0.5*l0
+    l0 = parameters_technical.subsystem
+    max_va = parameters_technical.cutoff_variance
+    epsilon = parameters_technical.precision
+    error_propagation = parameters_technical.error_propagation
+    min_jump = parameters_technical.min_jump
+    epsilon = parameters_technical.precision
 
     PR = []
     real_site = []
@@ -947,7 +973,7 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
             last_dyn = min(first_dyn + L-1 - site_now, l0)     #Not included
 
 
-        PR_local, how_many = dynamics_site_first( [first_dyn, last_dyn, h_local, Jxx, Jz, J1, J2, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation_ratio] )
+        PR_local, how_many = dynamics_site_first( [first_dyn, last_dyn, h_local, Jxx, Jz, J1, J2, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation] )
 
 
         if(how_many != 0):
@@ -969,23 +995,54 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 </details>
 </dd>
 <dt id="DaC.lib_N2.DaC_eigen_N2"><code class="name flex">
-<span>def <span class="ident">DaC_eigen_N2</span></span>(<span>potential, Jxx, Jz, system, subsystem, variance=1e-32, cutoff_overlap=1e-07, cutoff_E=1e-07, min_jump=0)</span>
+<span>def <span class="ident">DaC_eigen_N2</span></span>(<span>parameters_system, parameters_technical)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Main function to obtain localized eigenstates of the TIP problem.</p>
+<ul>
+<li>
+<p><strong>parameters_system</strong>: Object of the class <strong>System_Parameters_TIP</strong>,
+containing physical parameters to describe the system.</p>
+</li>
+<li>
+<p><strong>parameters_technical</strong>: Object of the class <strong>Technical_Parameters_Eigen</strong>,
+containing several cutoffs and parameters needed in the DaC algorithm.</p>
+</li>
+</ul>
+<p>It returns the set of obtained energies, the Observables of interest
+(as an object of the class <strong>Observables_TIP_class</strong>),
+the population in each consecutive site (i,i+1) and in which interval
+each of the obtained eigenstate is localized.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def DaC_eigen_N2( potential, Jxx, Jz, system, subsystem, variance = 1e-32, cutoff_overlap = 1e-7, cutoff_E = 1e-7, min_jump = 0 ):
+<pre><code class="python">def DaC_eigen_N2( parameters_system, parameters_technical):
 
-    h = potential
-    L = system
-    M_sub = subsystem
-    tol_overlap = cutoff_overlap
-    Delta_E = cutoff_E
-    if(min_jump &lt;= 0):
-        min_jump = int(0.5*M_sub)
+    &#39;&#39;&#39;
+    Main function to obtain localized eigenstates of the TIP problem.\n
+
+    * **parameters_system**: Object of the class **System_Parameters_TIP**,
+    containing physical parameters to describe the system.\n
+    * **parameters_technical**: Object of the class **Technical_Parameters_Eigen**,
+    containing several cutoffs and parameters needed in the DaC algorithm.\n
+    It returns the set of obtained energies, the Observables of interest
+    (as an object of the class **Observables_TIP_class**),
+    the population in each consecutive site (i,i+1) and in which interval
+    each of the obtained eigenstate is localized.
+    &#39;&#39;&#39;
+
+
+
+    h = parameters_system.potential
+    L = parameters_system.system
+    Jxx = parameters_system.hopping
+    Jz = parameters_system.interaction
+    M_sub = parameters_technical.subsystem
+    variance = parameters_technical.cutoff_variance
+    tol_overlap = parameters_technical.cutoff_overlap
+    Delta_E = parameters_technical.cutoff_E
+    min_jump = int(parameters_technical.shift * M_sub)
 
     popu = np.zeros(L - 1)
 
@@ -1096,12 +1153,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">E_v_subset</span></span>(<span>x)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Give back the eigenvalues (E) and eigenfunction itself (v).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def E_v_subset(x):
+    &#39;&#39;&#39;
+    Give back the eigenvalues (E) and eigenfunction itself (v).
+    &#39;&#39;&#39;
 
     (hred_r, Jxx, J_hops, Jz, sub_size, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, variance) = x
 
@@ -1136,12 +1196,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">PR_ED_N2</span></span>(<span>potential, Jxx, time_interest, Jz)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculate the PR using ED, only for small systems.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def PR_ED_N2( potential, Jxx, time_interest, Jz ):
+    &#39;&#39;&#39;
+    Calculate the PR using ED, only for small systems.
+    &#39;&#39;&#39;
 
     L = len(potential)
 
@@ -1174,12 +1237,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">banded_H</span></span>(<span>h, Jxx, Jz, m, permutation, hopping, width)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Create banded matrix.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def banded_H(h, Jxx, Jz, m, permutation, hopping, width ):
+    &#39;&#39;&#39;
+    Create banded matrix.
+    &#39;&#39;&#39;
 
     L = int( m*(m-1)*0.5)
 
@@ -1206,13 +1272,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">cal_PR_density</span></span>(<span>psi, all_sites, relevant_sites)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculate the PR in real space.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def cal_PR_density(psi, all_sites, relevant_sites):
-
+    &#39;&#39;&#39;
+    Calculate the PR in real space.
+    &#39;&#39;&#39;
     start = all_sites[relevant_sites, 0]
     end = all_sites[relevant_sites, 1]
 
@@ -1239,12 +1307,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">check_variance_N2</span></span>(<span>x)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Check variance of a possible eigen.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def check_variance_N2 (x):
+    &#39;&#39;&#39;
+    Check variance of a possible eigen.
+    &#39;&#39;&#39;
 
     (J1, J2, v, auxi_left, auxi_right) = x
 
@@ -1257,13 +1328,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">compare</span></span>(<span>E_left, v_left, E_center, v_center, which_old, which_new, tol_overlap, Delta_E)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Compare if eigenfunctions equal or not</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def compare(E_left, v_left, E_center, v_center, which_old, which_new, tol_overlap, Delta_E ):
-
+    &#39;&#39;&#39;
+    Compare if eigenfunctions equal or not
+    &#39;&#39;&#39;
     dif_E = np.fabs(np.tensordot(E_left, np.ones(len(E_center)), axes = 0) - np.tensordot(np.ones(len(E_left)), E_center, axes = 0)) &lt; Delta_E
 
     sure_old = np.sum( dif_E, axis = 1) == 0
@@ -1303,13 +1376,17 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">create_connections</span></span>(<span>M, M2)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Determine which nodes are connected by the hopping, connects site (i,j)
+to sites (i+-1, j) and (i, j+-1)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def create_connections(M, M2):
-
+    &#39;&#39;&#39;
+    Determine which nodes are connected by the hopping, connects site (i,j)
+    to sites (i+-1, j) and (i, j+-1)
+    &#39;&#39;&#39;
     Degree = np.ones( M2, dtype = int )
 
     Edges = []
@@ -1334,18 +1411,21 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">dynamics_site_first</span></span>(<span>x)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculate the dynamics of the states in a given subsystem (interval).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def dynamics_site_first(x):
+    &#39;&#39;&#39;
+    Calculate the dynamics of the states in a given subsystem (interval).
+    &#39;&#39;&#39;
 
-    (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation_ratio) = x
+    (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation) = x
 
     l0 = len(h)
 
-    error_ampl = epsilon/(error_propagation_ratio*l0*3)
+    error_ampl = epsilon/(error_propagation*l0*3)
 
     H_correct = banded_H(h, Jxx, Jz, l0, permutation, hopping, width )
 
@@ -1410,8 +1490,6 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 
             PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
 
-
-
     else:
         PR_T = []
         how_many = 0
@@ -1423,13 +1501,19 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">find_auxi</span></span>(<span>Lred)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculate which entries represent 1 particle in the left edge of the
+subsystem (auxi_left), the right end (auxi_right),
+and where the 2 particles are next to each other (where_together)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def find_auxi(Lred):
-
+    &#39;&#39;&#39;
+    Calculate which entries represent 1 particle in the left edge of the
+    subsystem (auxi_left), the right end (auxi_right),
+    and where the 2 particles are next to each other (where_together)
+    &#39;&#39;&#39;
     L2red = int(Lred*(Lred-1)*0.5)
 
     auxi_left = np.arange(0, Lred - 1)
@@ -1453,12 +1537,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">fun_cal_PR_Fock</span></span>(<span>psi)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculate the PR in Fock space, vectors stored as rows of matrix psi</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def fun_cal_PR_Fock(psi):
+    &#39;&#39;&#39;
+    Calculate the PR in Fock space, vectors stored as rows of matrix psi
+    &#39;&#39;&#39;
 
     PR = 1/np.sum(psi**4, axis = 1)
 
@@ -1469,12 +1556,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">fun_cal_PR_density</span></span>(<span>psi, how_density, L)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculate the PR from normalized density, vectors stored as rows of matrix psi.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def fun_cal_PR_density(psi, how_density, L):
+    &#39;&#39;&#39;
+    Calculate the PR from normalized density, vectors stored as rows of matrix psi.
+    &#39;&#39;&#39;
 
     density = np.zeros( ( len(psi[:, 0]) ,L) )
 
@@ -1494,12 +1584,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">fun_fluc_CoM</span></span>(<span>psi, which_CoM)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculate the fluctuation of the CoM</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def fun_fluc_CoM(psi, which_CoM):
+    &#39;&#39;&#39;
+    Calculate the fluctuation of the CoM
+    &#39;&#39;&#39;
 
     mean = np.sum( (psi**2)*which_CoM, axis = 1 )
 
@@ -1512,16 +1605,23 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">fun_give_back_observables</span></span>(<span>psi, parameters, N)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculate the observables of interest and store them in object of class
+<strong>Observables_TIP_class</strong>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def fun_give_back_observables(psi, parameters, N):
+    &#39;&#39;&#39;
+    Calculate the observables of interest and store them in object of class
+    **Observables_TIP_class**.
+    &#39;&#39;&#39;
 
-    Observables = Observables_TIP_class(fun_mean_dist( psi, parameters[0] ), fun_fluc_CoM ( psi, parameters[1] ),
-                    fun_cal_PR_density( psi, parameters[2], parameters[3] ), fun_cal_PR_Fock(psi),
-                    fun_prob_together(psi, parameters[4]))
+    Observables = Observables_TIP_class(fun_mean_dist( psi, parameters[0] ),
+                        fun_fluc_CoM ( psi, parameters[1] ),
+                        fun_cal_PR_density( psi, parameters[2], parameters[3] ),
+                        fun_cal_PR_Fock(psi),
+                        fun_prob_together(psi, parameters[4]))
 
     return Observables</code></pre>
 </details>
@@ -1530,12 +1630,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">fun_mean_dist</span></span>(<span>psi, which_dist)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculate the mean distance of state, stored as rows of matrix psi.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def fun_mean_dist(psi, which_dist):
+    &#39;&#39;&#39;
+    Calculate the mean distance of state, stored as rows of matrix psi.
+    &#39;&#39;&#39;
 
     d = np.sum( (psi**2)*which_dist, axis = 1)
 
@@ -1546,12 +1649,19 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">fun_parameters</span></span>(<span>M)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>All the parameters needed to calculate the observables.</p>
+<p>First is for the mean distance, second for CoM,
+third and forth for PR density, fifth for probability together</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def fun_parameters(M):
+    &#39;&#39;&#39;
+    All the parameters needed to calculate the observables.\n
+    First is for the mean distance, second for CoM,
+    third and forth for PR density, fifth for probability together
+    &#39;&#39;&#39;
 
     M2 = int( M*(M-1)*0.5 )
 
@@ -1624,12 +1734,15 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">fun_prob_together</span></span>(<span>psi, where_together)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Population on consecutive sites (i,i+1).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def fun_prob_together(psi, where_together):
+    &#39;&#39;&#39;
+    Population on consecutive sites (i,i+1).
+    &#39;&#39;&#39;
 
     P = np.sum ( psi[:, where_together]**2, axis = 1 )
 
@@ -1640,13 +1753,17 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">generate_how_compare</span></span>(<span>start_left, start_right, end_left, end_right)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Used when comparing eigenfunctions from different subset,
+give us the common entries. Assume that the subsystem have different sizes.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def generate_how_compare(start_left, start_right, end_left, end_right):
-
+    &#39;&#39;&#39;
+    Used when comparing eigenfunctions from different subset,
+    give us the common entries. Assume that the subsystem have different sizes.
+    &#39;&#39;&#39;
     M = end_left - start_left + 1
 
     l2 = int( M*(M-1)*0.5 )
@@ -1677,13 +1794,17 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">order_RCM</span></span>(<span>M)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Implement the Reverse Cuthill-McHill (RCM) algorithm, to reduce the bandwidth
+of the matrix.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def order_RCM(M):
-
+    &#39;&#39;&#39;
+    Implement the Reverse Cuthill-McHill (RCM) algorithm, to reduce the bandwidth
+    of the matrix.
+    &#39;&#39;&#39;
     M2 = int( M*(M-1)*0.5)
 
     Vertex = np.arange(M2, dtype = int)
@@ -1767,13 +1888,22 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <span>def <span class="ident">time_evolution_matrix</span></span>(<span>A, new_E, T)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calculates the PR of the initial states (rows of A)
+as a function of time (T).</p>
+<p>It uses numba, to speed up the for loop.</p>
+<p>We do not do a matrix multiplication to save memory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@jit(nopython=True)
 def time_evolution_matrix(A, new_E, T):
+    &#39;&#39;&#39;
+    Calculates the PR of the initial states (rows of A)
+    as a function of time (T).\n
+    It uses numba, to speed up the for loop.\n
+    We do not do a matrix multiplication to save memory.
+    &#39;&#39;&#39;
 
     N_rows = np.shape(A)[0]
     N_internal = len(new_E)

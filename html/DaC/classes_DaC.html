@@ -59,9 +59,10 @@ class System_Parameters_Anderson():
 
 
 
-class Technical_Parameters_Anderson_Eigen():
+class Technical_Parameters_Eigen():
     &#39;&#39;&#39;
-    Parameters needed for the Divide-and-Conquer algorithm (&#34;unphysical&#34; parameters), when obtaining eigenstates in the Anderson problem.\n
+    Parameters needed for the Divide-and-Conquer algorithm (&#34;unphysical&#34; parameters).
+    Valid for both Anderson and TIP problem.\n
     * **subsystem**: Number of sites in the subsystem.\n
     * **shift**: Shift between consecutive subsystems.\n
     * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
@@ -83,70 +84,43 @@ class Technical_Parameters_Anderson_Eigen():
 #time, array with the time of interest, where the PR is calculated
 
 
-class Technical_Parameters_Anderson_Dyn():
+class Technical_Parameters_Dyn():
     &#39;&#39;&#39;
-    Parameters needed for the Divide-and-Conquer algorithm (&#34;unphysical&#34; parameters), when interested in the dynamics
-    of the Anderson problem.\n
+    Parameters needed for the Divide-and-Conquer algorithm (&#34;unphysical&#34; parameters),
+    when interested in the dynamics of both the Anderson and TIP problem.\n
     * **subsystem**: Number of sites in the subsystem (subtract one if the number is odd).\n
     * **min_jump**: Minimum jump between consecutive subsystems.\n
     * **precision**: Upper bound of the error when calculating the Participation Ratio (PR).\n
     * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
-    * **error_propagation_ratio**: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.\n
+    * **error_propagation**: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.\n
     &#39;&#39;&#39;
 
 
-    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation_ratio=10):
+    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation=10):
         self.subsystem = subsystem
         self.min_jump = min_jump
         self.precision = precision
         self.cutoff_variance = cutoff_variance
-        self.error_propagation_ratio = error_propagation_ratio
+        self.error_propagation = error_propagation
 
 
 
-
-#########################
-#########################
-#########################
-
-#change
 class System_Parameters_TIP():
     &#39;&#39;&#39;
     Parameters describing the system.\n
-    * **size**: Number of sites in the system (L)\n
+    * **system**: Number of sites in the system (L)\n
     * **disorder**: Disorder strength (W)\n
-    * **hopping**: Site dependent hopping (Jxx)\n
+    * **hopping**: Constant hopping (Jxx)\n
+    * **interaction**: Interaction strength (Jz)\n
     * **potential**: Site dependent potential (h)
     &#39;&#39;&#39;
 
-    def __init__(self, size=0, disorder=0, hopping=0, potential=0):
-        self.size = size
+    def __init__(self, system=0, disorder=0, hopping=1, interaction = 1, potential=0):
+        self.system = system
         self.disorder = disorder
         self.hopping = hopping
+        self.interaction = interaction
         self.potential = potential
-
-
-
-#change
-class Technical_Parameters_TIP():
-    &#39;&#39;&#39;
-    Parameters needed for the Divide-and-Conquer algorithm (&#34;unphysical&#34;).\n
-    * **subsystem**: Number of sites in the subsystem.\n
-    * **shift**: Shift between consecutive subsystems.\n
-    * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
-    * **cutoff_overlap**: If the scalar product between eigenfunctions larger than cutoff_overlap, then they are considered as different eigenfunctions.\n
-    * **cutoff_E**: if eigenvalues between eigenfunctions are larger than cutoff_E, then they are considered as different eigenfunctions.
-    &#39;&#39;&#39;
-
-
-    def __init__(self, subsystem=0, shift = 0.5, cutoff_variance=1e-32, cutoff_overlap=1e-7, cutoff_E = 1e-7):
-        self.subsystem = subsystem
-        self.shift = shift
-        self.cutoff_variance = cutoff_variance
-        self.cutoff_overlap = cutoff_overlap
-        self.cutoff_E = cutoff_E
-
-
 
 
 class Observables_TIP_class():
@@ -296,19 +270,22 @@ class Observables_TIP_class():
 </dd>
 <dt id="DaC.classes_DaC.System_Parameters_TIP"><code class="flex name class">
 <span>class <span class="ident">System_Parameters_TIP</span></span>
-<span>(</span><span>size=0, disorder=0, hopping=0, potential=0)</span>
+<span>(</span><span>system=0, disorder=0, hopping=1, interaction=1, potential=0)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Parameters describing the system.</p>
 <ul>
 <li>
-<p><strong>size</strong>: Number of sites in the system (L)</p>
+<p><strong>system</strong>: Number of sites in the system (L)</p>
 </li>
 <li>
 <p><strong>disorder</strong>: Disorder strength (W)</p>
 </li>
 <li>
-<p><strong>hopping</strong>: Site dependent hopping (Jxx)</p>
+<p><strong>hopping</strong>: Constant hopping (Jxx)</p>
+</li>
+<li>
+<p><strong>interaction</strong>: Interaction strength (Jz)</p>
 </li>
 <li>
 <p><strong>potential</strong>: Site dependent potential (h)</p>
@@ -321,26 +298,28 @@ class Observables_TIP_class():
 <pre><code class="python">class System_Parameters_TIP():
     &#39;&#39;&#39;
     Parameters describing the system.\n
-    * **size**: Number of sites in the system (L)\n
+    * **system**: Number of sites in the system (L)\n
     * **disorder**: Disorder strength (W)\n
-    * **hopping**: Site dependent hopping (Jxx)\n
+    * **hopping**: Constant hopping (Jxx)\n
+    * **interaction**: Interaction strength (Jz)\n
     * **potential**: Site dependent potential (h)
     &#39;&#39;&#39;
 
-    def __init__(self, size=0, disorder=0, hopping=0, potential=0):
-        self.size = size
+    def __init__(self, system=0, disorder=0, hopping=1, interaction = 1, potential=0):
+        self.system = system
         self.disorder = disorder
         self.hopping = hopping
+        self.interaction = interaction
         self.potential = potential</code></pre>
 </details>
 </dd>
-<dt id="DaC.classes_DaC.Technical_Parameters_Anderson_Dyn"><code class="flex name class">
-<span>class <span class="ident">Technical_Parameters_Anderson_Dyn</span></span>
-<span>(</span><span>subsystem, min_jump=1, precision=0.0001, cutoff_variance=1e-32, error_propagation_ratio=10)</span>
+<dt id="DaC.classes_DaC.Technical_Parameters_Dyn"><code class="flex name class">
+<span>class <span class="ident">Technical_Parameters_Dyn</span></span>
+<span>(</span><span>subsystem, min_jump=1, precision=0.0001, cutoff_variance=1e-32, error_propagation=10)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Parameters needed for the Divide-and-Conquer algorithm ("unphysical" parameters), when interested in the dynamics
-of the Anderson problem.</p>
+<div class="desc"><p>Parameters needed for the Divide-and-Conquer algorithm ("unphysical" parameters),
+when interested in the dynamics of both the Anderson and TIP problem.</p>
 <ul>
 <li>
 <p><strong>subsystem</strong>: Number of sites in the subsystem (subtract one if the number is odd).</p>
@@ -355,39 +334,40 @@ of the Anderson problem.</p>
 <p><strong>cutoff_variance</strong>: Cutoff for the variance of the eigenstates (accept only those with lower variance).</p>
 </li>
 <li>
-<p><strong>error_propagation_ratio</strong>: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.</p>
+<p><strong>error_propagation</strong>: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.</p>
 </li>
 </ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Technical_Parameters_Anderson_Dyn():
+<pre><code class="python">class Technical_Parameters_Dyn():
     &#39;&#39;&#39;
-    Parameters needed for the Divide-and-Conquer algorithm (&#34;unphysical&#34; parameters), when interested in the dynamics
-    of the Anderson problem.\n
+    Parameters needed for the Divide-and-Conquer algorithm (&#34;unphysical&#34; parameters),
+    when interested in the dynamics of both the Anderson and TIP problem.\n
     * **subsystem**: Number of sites in the subsystem (subtract one if the number is odd).\n
     * **min_jump**: Minimum jump between consecutive subsystems.\n
     * **precision**: Upper bound of the error when calculating the Participation Ratio (PR).\n
     * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
-    * **error_propagation_ratio**: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.\n
+    * **error_propagation**: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.\n
     &#39;&#39;&#39;
 
 
-    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation_ratio=10):
+    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation=10):
         self.subsystem = subsystem
         self.min_jump = min_jump
         self.precision = precision
         self.cutoff_variance = cutoff_variance
-        self.error_propagation_ratio = error_propagation_ratio</code></pre>
+        self.error_propagation = error_propagation</code></pre>
 </details>
 </dd>
-<dt id="DaC.classes_DaC.Technical_Parameters_Anderson_Eigen"><code class="flex name class">
-<span>class <span class="ident">Technical_Parameters_Anderson_Eigen</span></span>
+<dt id="DaC.classes_DaC.Technical_Parameters_Eigen"><code class="flex name class">
+<span>class <span class="ident">Technical_Parameters_Eigen</span></span>
 <span>(</span><span>subsystem, shift=0.5, cutoff_variance=1e-32, cutoff_overlap=1e-07, cutoff_E=1e-07)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Parameters needed for the Divide-and-Conquer algorithm ("unphysical" parameters), when obtaining eigenstates in the Anderson problem.</p>
+<div class="desc"><p>Parameters needed for the Divide-and-Conquer algorithm ("unphysical" parameters).
+Valid for both Anderson and TIP problem.</p>
 <ul>
 <li>
 <p><strong>subsystem</strong>: Number of sites in the subsystem.</p>
@@ -409,9 +389,10 @@ of the Anderson problem.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Technical_Parameters_Anderson_Eigen():
+<pre><code class="python">class Technical_Parameters_Eigen():
     &#39;&#39;&#39;
-    Parameters needed for the Divide-and-Conquer algorithm (&#34;unphysical&#34; parameters), when obtaining eigenstates in the Anderson problem.\n
+    Parameters needed for the Divide-and-Conquer algorithm (&#34;unphysical&#34; parameters).
+    Valid for both Anderson and TIP problem.\n
     * **subsystem**: Number of sites in the subsystem.\n
     * **shift**: Shift between consecutive subsystems.\n
     * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
@@ -421,52 +402,6 @@ of the Anderson problem.</p>
 
 
     def __init__(self, subsystem, shift = 0.5, cutoff_variance=1e-32, cutoff_overlap=1e-7, cutoff_E = 1e-7):
-        self.subsystem = subsystem
-        self.shift = shift
-        self.cutoff_variance = cutoff_variance
-        self.cutoff_overlap = cutoff_overlap
-        self.cutoff_E = cutoff_E</code></pre>
-</details>
-</dd>
-<dt id="DaC.classes_DaC.Technical_Parameters_TIP"><code class="flex name class">
-<span>class <span class="ident">Technical_Parameters_TIP</span></span>
-<span>(</span><span>subsystem=0, shift=0.5, cutoff_variance=1e-32, cutoff_overlap=1e-07, cutoff_E=1e-07)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Parameters needed for the Divide-and-Conquer algorithm ("unphysical").</p>
-<ul>
-<li>
-<p><strong>subsystem</strong>: Number of sites in the subsystem.</p>
-</li>
-<li>
-<p><strong>shift</strong>: Shift between consecutive subsystems.</p>
-</li>
-<li>
-<p><strong>cutoff_variance</strong>: Cutoff for the variance of the eigenstates (accept only those with lower variance).</p>
-</li>
-<li>
-<p><strong>cutoff_overlap</strong>: If the scalar product between eigenfunctions larger than cutoff_overlap, then they are considered as different eigenfunctions.</p>
-</li>
-<li>
-<p><strong>cutoff_E</strong>: if eigenvalues between eigenfunctions are larger than cutoff_E, then they are considered as different eigenfunctions.</p>
-</li>
-</ul></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Technical_Parameters_TIP():
-    &#39;&#39;&#39;
-    Parameters needed for the Divide-and-Conquer algorithm (&#34;unphysical&#34;).\n
-    * **subsystem**: Number of sites in the subsystem.\n
-    * **shift**: Shift between consecutive subsystems.\n
-    * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
-    * **cutoff_overlap**: If the scalar product between eigenfunctions larger than cutoff_overlap, then they are considered as different eigenfunctions.\n
-    * **cutoff_E**: if eigenvalues between eigenfunctions are larger than cutoff_E, then they are considered as different eigenfunctions.
-    &#39;&#39;&#39;
-
-
-    def __init__(self, subsystem=0, shift = 0.5, cutoff_variance=1e-32, cutoff_overlap=1e-7, cutoff_E = 1e-7):
         self.subsystem = subsystem
         self.shift = shift
         self.cutoff_variance = cutoff_variance
@@ -500,13 +435,10 @@ of the Anderson problem.</p>
 <h4><code><a title="DaC.classes_DaC.System_Parameters_TIP" href="#DaC.classes_DaC.System_Parameters_TIP">System_Parameters_TIP</a></code></h4>
 </li>
 <li>
-<h4><code><a title="DaC.classes_DaC.Technical_Parameters_Anderson_Dyn" href="#DaC.classes_DaC.Technical_Parameters_Anderson_Dyn">Technical_Parameters_Anderson_Dyn</a></code></h4>
+<h4><code><a title="DaC.classes_DaC.Technical_Parameters_Dyn" href="#DaC.classes_DaC.Technical_Parameters_Dyn">Technical_Parameters_Dyn</a></code></h4>
 </li>
 <li>
-<h4><code><a title="DaC.classes_DaC.Technical_Parameters_Anderson_Eigen" href="#DaC.classes_DaC.Technical_Parameters_Anderson_Eigen">Technical_Parameters_Anderson_Eigen</a></code></h4>
-</li>
-<li>
-<h4><code><a title="DaC.classes_DaC.Technical_Parameters_TIP" href="#DaC.classes_DaC.Technical_Parameters_TIP">Technical_Parameters_TIP</a></code></h4>
+<h4><code><a title="DaC.classes_DaC.Technical_Parameters_Eigen" href="#DaC.classes_DaC.Technical_Parameters_Eigen">Technical_Parameters_Eigen</a></code></h4>
 </li>
 </ul>
 </li>

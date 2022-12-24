@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>DaC.test_DaC_N2 API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="File with the tests, for the dynamics of the TIP problem." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,30 +22,47 @@
 <h1 class="title">Module <code>DaC.test_DaC_N2</code></h1>
 </header>
 <section id="section-intro">
+<p>File with the tests, for the dynamics of the TIP problem.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from lib_N2 import DaC_eigen_N2, DaC_N2_dyn, PR_ED_N2
+<pre><code class="python">&#39;&#39;&#39;
+File with the tests, for the dynamics of the TIP problem.
+&#39;&#39;&#39;
+
+from lib_N2 import DaC_eigen_N2, DaC_N2_dyn, PR_ED_N2
 import random
 import numpy as np
+from classes_DaC import System_Parameters_TIP, Technical_Parameters_Eigen, Technical_Parameters_Dyn
 
 
 
 def check_PR_dyn_N2( L, M, W ):
+    &#39;&#39;&#39;
+    Check that we obtain the dynamics using DaC and ED
+    (system should be small enough to do ED).
+    &#39;&#39;&#39;
 
     potential = np.random.uniform(-W, W, L)
     Jxx = 1
     Jz = 1
-    precision = 1e-5
+
+    Physical_parameters = System_Parameters_TIP( L, W, Jxx, Jz, potential)
+
+
     time = np.arange(0, 10, 0.5)
 
-    variance = 1e-16
+    cutoff_variance = 1e-16
     min_jump = 1
-    error_propagation_ratio = 10
+    error_propagation = 10
+    precision = 1e-5
 
+    DaC_paramenters = Technical_Parameters_Dyn(M, cutoff_variance = cutoff_variance,
+                        min_jump = min_jump, error_propagation = error_propagation,
+                        precision = precision)
 
-    PR, sites = DaC_N2_dyn( system = L, subsystem = M, potential = potential, Jxx = Jxx, Jz = Jz, time = time, precision = precision, variance = variance, min_jump = min_jump, error_propagation_ratio = error_propagation_ratio )
+    PR, sites = DaC_N2_dyn( Physical_parameters, time, DaC_paramenters )
 
 
     if( len(sites) != 0 and L &lt;= 200):
@@ -73,15 +90,17 @@ def check_PR_dyn_N2( L, M, W ):
 
 
 def test_dyn_N2():
+    &#39;&#39;&#39;
+    Provide input for some test (dynamics).
+    &#39;&#39;&#39;
+    M = 50
 
-    M = 30                       
-
-    L_array = [45, 50]
-    W_array = [40, 50]
+    L_array = [70, 100]
+    W_array = [20, 30]
 
     for L in L_array:
         for W in W_array:
-            
+
             check_PR_dyn_N2(L, M, W)</code></pre>
 </details>
 </section>
@@ -96,25 +115,37 @@ def test_dyn_N2():
 <span>def <span class="ident">check_PR_dyn_N2</span></span>(<span>L, M, W)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Check that we obtain the dynamics using DaC and ED
+(system should be small enough to do ED).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def check_PR_dyn_N2( L, M, W ):
+    &#39;&#39;&#39;
+    Check that we obtain the dynamics using DaC and ED
+    (system should be small enough to do ED).
+    &#39;&#39;&#39;
 
     potential = np.random.uniform(-W, W, L)
     Jxx = 1
     Jz = 1
-    precision = 1e-5
+
+    Physical_parameters = System_Parameters_TIP( L, W, Jxx, Jz, potential)
+
+
     time = np.arange(0, 10, 0.5)
 
-    variance = 1e-16
+    cutoff_variance = 1e-16
     min_jump = 1
-    error_propagation_ratio = 10
+    error_propagation = 10
+    precision = 1e-5
 
+    DaC_paramenters = Technical_Parameters_Dyn(M, cutoff_variance = cutoff_variance,
+                        min_jump = min_jump, error_propagation = error_propagation,
+                        precision = precision)
 
-    PR, sites = DaC_N2_dyn( system = L, subsystem = M, potential = potential, Jxx = Jxx, Jz = Jz, time = time, precision = precision, variance = variance, min_jump = min_jump, error_propagation_ratio = error_propagation_ratio )
+    PR, sites = DaC_N2_dyn( Physical_parameters, time, DaC_paramenters )
 
 
     if( len(sites) != 0 and L &lt;= 200):
@@ -143,21 +174,23 @@ def test_dyn_N2():
 <span>def <span class="ident">test_dyn_N2</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Provide input for some test (dynamics).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def test_dyn_N2():
+    &#39;&#39;&#39;
+    Provide input for some test (dynamics).
+    &#39;&#39;&#39;
+    M = 50
 
-    M = 30                       
-
-    L_array = [45, 50]
-    W_array = [40, 50]
+    L_array = [70, 100]
+    W_array = [20, 30]
 
     for L in L_array:
         for W in W_array:
-            
+
             check_PR_dyn_N2(L, M, W)</code></pre>
 </details>
 </dd>

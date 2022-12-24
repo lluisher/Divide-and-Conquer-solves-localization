@@ -30,9 +30,10 @@ class System_Parameters_Anderson():
 
 
 
-class Technical_Parameters_Anderson_Eigen():
+class Technical_Parameters_Eigen():
     '''
-    Parameters needed for the Divide-and-Conquer algorithm ("unphysical" parameters), when obtaining eigenstates in the Anderson problem.\n
+    Parameters needed for the Divide-and-Conquer algorithm ("unphysical" parameters).
+    Valid for both Anderson and TIP problem.\n
     * **subsystem**: Number of sites in the subsystem.\n
     * **shift**: Shift between consecutive subsystems.\n
     * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
@@ -54,70 +55,43 @@ class Technical_Parameters_Anderson_Eigen():
 #time, array with the time of interest, where the PR is calculated
 
 
-class Technical_Parameters_Anderson_Dyn():
+class Technical_Parameters_Dyn():
     '''
-    Parameters needed for the Divide-and-Conquer algorithm ("unphysical" parameters), when interested in the dynamics
-    of the Anderson problem.\n
+    Parameters needed for the Divide-and-Conquer algorithm ("unphysical" parameters),
+    when interested in the dynamics of both the Anderson and TIP problem.\n
     * **subsystem**: Number of sites in the subsystem (subtract one if the number is odd).\n
     * **min_jump**: Minimum jump between consecutive subsystems.\n
     * **precision**: Upper bound of the error when calculating the Participation Ratio (PR).\n
     * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
-    * **error_propagation_ratio**: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.\n
+    * **error_propagation**: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.\n
     '''
 
 
-    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation_ratio=10):
+    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation=10):
         self.subsystem = subsystem
         self.min_jump = min_jump
         self.precision = precision
         self.cutoff_variance = cutoff_variance
-        self.error_propagation_ratio = error_propagation_ratio
+        self.error_propagation = error_propagation
 
 
 
-
-#########################
-#########################
-#########################
-
-#change
 class System_Parameters_TIP():
     '''
     Parameters describing the system.\n
-    * **size**: Number of sites in the system (L)\n
+    * **system**: Number of sites in the system (L)\n
     * **disorder**: Disorder strength (W)\n
-    * **hopping**: Site dependent hopping (Jxx)\n
+    * **hopping**: Constant hopping (Jxx)\n
+    * **interaction**: Interaction strength (Jz)\n
     * **potential**: Site dependent potential (h)
     '''
 
-    def __init__(self, size=0, disorder=0, hopping=0, potential=0):
-        self.size = size
+    def __init__(self, system=0, disorder=0, hopping=1, interaction = 1, potential=0):
+        self.system = system
         self.disorder = disorder
         self.hopping = hopping
+        self.interaction = interaction
         self.potential = potential
-
-
-
-#change
-class Technical_Parameters_TIP():
-    '''
-    Parameters needed for the Divide-and-Conquer algorithm ("unphysical").\n
-    * **subsystem**: Number of sites in the subsystem.\n
-    * **shift**: Shift between consecutive subsystems.\n
-    * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
-    * **cutoff_overlap**: If the scalar product between eigenfunctions larger than cutoff_overlap, then they are considered as different eigenfunctions.\n
-    * **cutoff_E**: if eigenvalues between eigenfunctions are larger than cutoff_E, then they are considered as different eigenfunctions.
-    '''
-
-
-    def __init__(self, subsystem=0, shift = 0.5, cutoff_variance=1e-32, cutoff_overlap=1e-7, cutoff_E = 1e-7):
-        self.subsystem = subsystem
-        self.shift = shift
-        self.cutoff_variance = cutoff_variance
-        self.cutoff_overlap = cutoff_overlap
-        self.cutoff_E = cutoff_E
-
-
 
 
 class Observables_TIP_class():

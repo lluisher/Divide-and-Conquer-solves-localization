@@ -4,7 +4,7 @@ Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigensta
 
 
 ## Aim:
-Study physical properties of arbitrarily large systems, reducing the effect of boundary conditions and dealing with apperance of rare regions, where the fluctuations of the random potential is far away from the mean fluctuations, and their effect. The limitation of the algorithm is given by the localization length of the eigenstates, not the system size. The localization length of the eigenstates depends on the considered potential (microscopic details).
+Study physical properties of arbitrarily large systems, reducing the effect of boundary conditions and dealing with appearance of rare regions, where the fluctuations of the random potential is far away from the mean fluctuations, and their effect. The limitation of the algorithm is given by the localization length of the eigenstates, not the system size. The localization length of the eigenstates depends on the considered potential (microscopic details).
 
 
 ## How to use it and example of results:

@@ -7,7 +7,7 @@ from lib_N1 import DaC_eigen_N1, DaC_dyn_N1, energies_ED, PR_ED
 import random
 import numpy as np
 
-from classes_DaC import System_Parameters_Anderson, Technical_Parameters_Anderson_Eigen, Technical_Parameters_Anderson_Dyn
+from classes_DaC import System_Parameters_Anderson, Technical_Parameters_Eigen, Technical_Parameters_Dyn
 
 
 def example_eigen_N1():
@@ -15,7 +15,7 @@ def example_eigen_N1():
     Remember, to use the ***DaC_eigen_N1()***, we need to provide:\n
     1. Object of class **System_Parameters_Anderson**
     (physical paremeters, like size of system).\n
-    2. Object of class **Technical_Parameters_Anderson_Eigen**
+    2. Object of class **Technical_Parameters_Eigen**
     (parameters needed for the DaC algorithm).\n
     This function calls the ***DaC_eigen_N1()***
     and also calculates the energies using ED, from ***energies_ED()***.\n
@@ -30,7 +30,7 @@ def example_eigen_N1():
     Physical_parameters = System_Parameters_Anderson( L, W, potential, hopping_dist)
 
     M = 200
-    DaC_paramenters = Technical_Parameters_Anderson_Eigen(M)
+    DaC_paramenters = Technical_Parameters_Eigen(M)
 
     E, PR, population = DaC_eigen_N1( Physical_parameters, DaC_paramenters)
     N = len(E)
@@ -58,7 +58,7 @@ def example_dyn_N1():
     1. Object of class **System_Parameters_Anderson**
     (physical paremeters, like size of system).\n
     2. Numpy array with the times of interest.\n
-    3. Object of class **Technical_Parameters_Anderson_Dyn**
+    3. Object of class **Technical_Parameters_Dyn**
     (parameters needed for the DaC algorithm).\n
     This function calls the ***DaC_dyn_N1()*** to calculate the PR of considered
     initial states and the considered times. It compares the results with the
@@ -77,7 +77,7 @@ def example_dyn_N1():
 
     M = 200
     precision = 1e-7
-    DaC_paramenters = Technical_Parameters_Anderson_Dyn(M, precision = precision)
+    DaC_paramenters = Technical_Parameters_Dyn(M, precision = precision)
 
     PR, sites = DaC_dyn_N1( Physical_parameters, time, DaC_paramenters)
 
@@ -95,7 +95,7 @@ def example_dyn_N1():
         if(max_error < precision):
             print("Maximum error PR smaller than needed precision. Great :)")
         else:
-            print("ATTENTION! Error in PR exceeds needed precision! Try to reduce the cutoff of the variance, until precision is larger than the square root of the variance, or increase value of \"error_propagation_ratio\".")
+            print("ATTENTION! Error in PR exceeds needed precision! Try to reduce the cutoff of the variance, until precision is larger than the square root of the variance, or increase value of \"error_propagation\".")
 
 
 example_dyn_N1()

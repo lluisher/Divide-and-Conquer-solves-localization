@@ -1,10 +1,10 @@
 '''
-File with the test, both for eigenstates and dynamics of the Anderson model.
+File with the tests, both for eigenstates and dynamics of the Anderson model.
 '''
 from lib_N1 import DaC_eigen_N1, DaC_dyn_N1, energies_ED, PR_ED
 import random
 import numpy as np
-from classes_DaC import System_Parameters_Anderson, Technical_Parameters_Anderson_Eigen, Technical_Parameters_Anderson_Dyn
+from classes_DaC import System_Parameters_Anderson, Technical_Parameters_Eigen, Technical_Parameters_Dyn
 
 
 
@@ -19,7 +19,7 @@ def check_eigenvalues_DaC_N1( L, M, W):
 
     Physical_parameters = System_Parameters_Anderson( L, W, potential, hopping_dist)
 
-    DaC_paramenters = Technical_Parameters_Anderson_Eigen(M)
+    DaC_paramenters = Technical_Parameters_Eigen(M)
 
 
     E, PR, population = DaC_eigen_N1( Physical_parameters, DaC_paramenters )
@@ -47,7 +47,7 @@ def check_PR_dyn_N1( L, M, W ):
 
     Physical_parameters = System_Parameters_Anderson( L, W, h, hopping_strength=Jxx)
 
-    DaC_paramenters = Technical_Parameters_Anderson_Dyn(M, precision = precision)
+    DaC_paramenters = Technical_Parameters_Dyn(M, precision = precision)
 
     time = np.arange(0, 10, 0.5)
 
