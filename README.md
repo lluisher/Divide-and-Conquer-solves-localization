@@ -1,10 +1,12 @@
 # Divide-and-Conquer-solves-localization
-Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigenstates and the dynamical evolution of states out-of-equilibrium in arbitrarily large systems with few (1 or 2) particles. For more details, please see the [paper in Arxiv](http://arxiv.org/abs/2211.13089).
+Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigenstates and the dynamical evolution of states out-of-equilibrium in arbitrarily large systems with few (1 or 2) particles.
+For more details, please see the [paper in Arxiv](http://arxiv.org/abs/2211.13089).
+The documentation for the functions can be found at [documentation](https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/index).
 
 
 
 ## Aim:
-Study physical properties of arbitrarily large systems, reducing the effect of boundary conditions and dealing with apperance of rare regions, where the fluctuations of the random potential is far away from the mean fluctuations, and their effect. The limitation of the algorithm is given by the localization length of the eigenstates, not the system size. The localization length of the eigenstates depends on the considered potential (microscopic details).
+Study physical properties of arbitrarily large systems, reducing the effect of boundary conditions and dealing with appearance of rare regions, where the fluctuations of the random potential is far away from the mean fluctuations, and their effect. The limitation of the algorithm is given by the localization length of the eigenstates, not the system size. The localization length of the eigenstates depends on the considered potential (microscopic details).
 
 
 ## How to use it and example of results:
@@ -76,41 +78,25 @@ The observables obtained are:
 
 
 ## Functions:
-There are 4 fundamental functions, 2 dealing with the Anderson model (in lib\_N1.py) and 2 functions dealing with the N=2 particles scenario (in lib\_N2.py).
+There are 4 main functions, 2 dealing with the Anderson model (in lib\_N1.py) and 2 functions dealing with the N=2 particles scenario (in lib\_N2.py).
 
-1. DaC\_eigen\_N1( system, subsystem, potential, hopping ; shift = 0, variance = 1e-32, cutoff\_overlap = 1e-7, cutoff\_E = 1e-7 )
+1. [DaC\_eigen\_N1(...)](link to documentation)
 
-Calculate the eigenstate of the Anderson model of a system with *system* sites, with values of the on-site potential given in *potential* and the hopping terms given in *hopping* (entry i of *hopping* determines the hopping between site i an i+1), for a given subsystem of size *subsystem*.
-
-It returns 3 different arrays, one with the obtained eigenvalues, the other the values of the Participation Ratio of the obtained eigenvectors and the last array contains the population in each site, which should be always one, if all eigenstate are obtained.
+Calculate the eigenstates of the Anderson model.
 
 
-2. DaC\_dyn\_N1 ( system, subsystem, potential, Jxx, precision, time; variance = 1e-32, min\_jump = 1, error\_propagation\_ratio = 10 )
+2. [DaC\_dyn\_N1 (...)](link to documentation)
 
-Calculate the time evolution of the observable Participation Ratio (PR) for several times of interest, given in the numpy array *time*, where the initial state is a wavefunction with the particle localized in one of the sites of the system. The system has *system* sites, with values of the on-site potential given in *potential* and the hopping coefficient, constant in each site, is given in *Jxx*. An upper bound of the error in the PR is given by the value of *precision*.
-
-
-It returns a 2D array, with the values of the Participation Ratio for the several times of interest, where the 0-axis refers to the initial states (maximum *system*) and the 1-axis refers to the instance of the time. It also returns a 1D array, specifying which are the initial states of the wavefunctions solved
+Calculate the time evolution in the Anderson model, focusing on the the Participation Ratio (PR) for several times of interest
 
 
-3. DaC\_eigen\_N2 ( system, subsystem, potential, Jxx, Jz; variance = 1e-32, cutoff\_overlap = 1e-7, cutoff\_E = 1e-7, min\_jump = 0 )
+3. [DaC\_eigen\_N2 (...)](link to documentation)
 
-Calculate the eigenstates of the two interacting particle problem, in a system with *system* sites, which can be fit in a subsytem of size *subsystem*. The values of the on-site potential are given in *potential*, the hopping coefficient is *Jxx* and the interaction strength is *Jz*.
+Calculate the eigenstates of the two interacting particle problem.
 
-It returns 4 arrays:
+4. [DaC\_dyn\_N2 (...)](link to documentation)
 
-   - A 1D-array, with the energy (eigenvalues) of the eigenstates (eigenvectors).
-   - A 2D-array, in the 0-axis are 5 different observables and the 1-axis refers to each of the obtained eigenstates. The observables are, in order, the mean distance, the fluctuations of the Center-of-Mass, the Participation Ratio from density, the Participation Ratio in Fock space and the probability to find the two particles in consecutive sites.
-   - The filling factor in the population of the sites (i,i+1), for all i, from the obtained eigenvectors from the DaC method
-   - A 1D-array, indicating in which sites the obtained eigenvectors start
-
-
-4. DaC\_dyn\_N2 ( system, subsystem, potential, Jxx, Jz, time, precision; variance = 1e-32, min\_jump = 1, error\_propagation\_ratio = 10 )
-
-Calculate the time evolution of the observable Participation Ratio (PR) for several times of interest, given in the numpy array *time*, where the initial state is a wavefunction with the two particles localized in consecutive sites of the system. The system has *system* sites, with values of the on-site potential given in *potential*, the hopping coefficient, constant in each site, is given in *Jxx* and the interaction strength is *Jz*. An upper bound of the error in the PR is given by the value of *precision*.
-
-
-
+Calculate the time evolution in the Two-Interacting Particle problem, focusing on the Participation Ratio (PR) for several times of interest.
 
 ## Future work:
 
