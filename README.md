@@ -13,9 +13,9 @@ Study physical properties of arbitrarily large systems, reducing the effect of b
 
 Examples of how to use the implemented functions are given in the files example\_DaC\_N1.py and example\_DaC\_N2.py. The accuracy is tested in files test\_DaC\_N1.py and test\_DaC\_N2.py.
 
-Example of the data we can generate thanks to the large statistics, from obtaining the full set of eigenvalues of a matrix of dimension 10⁹ x 10⁹
-![4D_box_W5d0](https://user-images.githubusercontent.com/102743817/166163744-609af944-6b48-43c7-bf2c-d319e64a826c.png)
+The following plot is an example of detail level we can reach thanks to the large statistics, from the full set of eigenvalues of a matrix of dimension 10⁹ x 10⁹
 
+![4D_box_W5d0](https://user-images.githubusercontent.com/102743817/210231439-a5b0e7cc-9a4e-4912-a352-0e02f31b1387.png)
 
 
 ## Model implemented:
