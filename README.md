@@ -1,7 +1,7 @@
 # Divide-and-Conquer-solves-localization
 Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigenstates and the dynamical evolution of states out-of-equilibrium in arbitrarily large systems with few (1 or 2) particles.
 For more details, please see the [paper in Arxiv](http://arxiv.org/abs/2211.13089).
-The documentation for the functions can be found at [documentation](https://htmlpreview.github.io/?https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/index.html).
+The documentation for the functions can be found at [documentation](https://htmlpreview.github.io/?https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/index.md).
 
 
 
@@ -80,21 +80,21 @@ The observables obtained are:
 ## Functions:
 There are 4 main functions, 2 dealing with the Anderson model (in lib\_N1.py) and 2 functions dealing with the N=2 particles scenario (in lib\_N2.py).
 
-1. [DaC\_eigen\_N1(...)](https://htmlpreview.github.io/?https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/lib_N1.html)
+1. [DaC\_eigen\_N1(...)](https://htmlpreview.github.io/?https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/lib_N1.md)
 
 Calculate the eigenstates of the Anderson model.
 
 
-2. [DaC\_dyn\_N1 (...)](https://htmlpreview.github.io/?https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/lib_N1.html)
+2. [DaC\_dyn\_N1 (...)](https://htmlpreview.github.io/?https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/lib_N1.md)
 
 Calculate the time evolution in the Anderson model, focusing on the the Participation Ratio (PR) for several times of interest
 
 
-3. [DaC\_eigen\_N2 (...)](https://htmlpreview.github.io/?https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/lib_N2.html)
+3. [DaC\_eigen\_N2 (...)](https://htmlpreview.github.io/?https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/lib_N2.md)
 
 Calculate the eigenstates of the two interacting particle problem.
 
-4. [DaC\_dyn\_N2 (...)](https://htmlpreview.github.io/?https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/lib_N2.html)
+4. [DaC\_dyn\_N2 (...)](https://htmlpreview.github.io/?https://github.com/lluisher/Divide-and-Conquer-solves-localization/tree/main/html/DaC/lib_N2.md)
 
 Calculate the time evolution in the Two-Interacting Particle problem, focusing on the Participation Ratio (PR) for several times of interest.
 
