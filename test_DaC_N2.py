@@ -28,22 +28,20 @@ def check_PR_dyn_N2( L, M, W ):
     min_jump = 5
     error_propagation = 10
     precision = 1e-5
+    reduce_memory = False
 
     DaC_paramenters = Technical_Parameters_Dyn(M, cutoff_variance = cutoff_variance,
                         min_jump = min_jump, error_propagation = error_propagation,
-                        precision = precision)
+                        precision = precision, reduce_memory = reduce_memory)
 
     PR, sites = DaC_N2_dyn( Physical_parameters, time, DaC_paramenters )
 
 
     if( len(sites) != 0 and L <= 200):
 
-        PR_T_ED = PR_ED_N2( potential = potential, Jxx = Jxx, Jz = Jz, time_interest = time )
-        max_error = 0
+        PR_T_ED = PR_ED_N2( potential = potential, Jxx = Jxx, Jz = Jz, time_interest = time, sites = sites, reduce_memory = reduce_memory )
 
-        for j in range( 0, len(sites) ):
-            real_site = sites[j]
-            max_error = max(max_error, np.amax( np.fabs(PR_T_ED[real_site] - PR[j]) ) )
+        max_error = np.amax( np.fabs(PR_T_ED - PR) )
 
         assert (max_error < precision) == True
 

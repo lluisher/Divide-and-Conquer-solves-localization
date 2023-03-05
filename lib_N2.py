@@ -432,12 +432,21 @@ def DaC_eigen_N2( parameters_system, parameters_technical):
 
 
 
+def time_evolution(A, new_E, T):
+    '''
+    Calculates the PR of the initial states (rows of A)
+    as a function of time (T).\n
+    Memory consuming but faster.
+    '''
+
+    evol_matrix = np.e**( -1j * np.tensordot(new_E, T, axes = 0) )
+    return np.dot(A, evol_matrix)
 
 
 
 
 @jit(nopython=True)
-def time_evolution_matrix(A, new_E, T):
+def time_evolution_loop(A, new_E, T):
     '''
     Calculates the PR of the initial states (rows of A)
     as a function of time (T).\n
@@ -475,7 +484,7 @@ def dynamics_site_first(x):
     Calculate the dynamics of the states in a given subsystem (interval).
     '''
 
-    (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation) = x
+    (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation, reduce_memory) = x
 
     l0 = len(h)
 
@@ -534,15 +543,17 @@ def dynamics_site_first(x):
 
             local_store = local_store[relevant_eigen].T
 
-            final_r, final_c = time_evolution_matrix(local_store, new_E[maybe], T )
-
-            final = final_r + final_c*1j
-
-            final_r = 0
-            final_c = 0
-            local_store = 0
-
-            PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
+            if(reduce_memory):
+                final_r, final_c = time_evolution_loop(local_store, new_E[maybe], T )
+                final = final_r + final_c*1j
+                final_r = 0
+                final_c = 0
+                local_store = 0
+                PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
+            else:
+                final = time_evolution(local_store, new_E, T )
+                local_store = 0
+                PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
 
     else:
         PR_T = []
@@ -608,6 +619,7 @@ def DaC_N2_dyn( parameters_system, time, parameters_technical):
     error_propagation = parameters_technical.error_propagation
     min_jump = parameters_technical.min_jump
     epsilon = parameters_technical.precision
+    reduce_memory = parameters_technical.memory
 
     PR = []
     real_site = []
@@ -644,7 +656,7 @@ def DaC_N2_dyn( parameters_system, time, parameters_technical):
             last_dyn = min(first_dyn + L-1 - site_now, l0)     #Not included
 
 
-        PR_local, how_many = dynamics_site_first( [first_dyn, last_dyn, h_local, Jxx, Jz, J1, J2, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation] )
+        PR_local, how_many = dynamics_site_first( [first_dyn, last_dyn, h_local, Jxx, Jz, J1, J2, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation, reduce_memory] )
 
 
         if(how_many != 0):
@@ -817,7 +829,7 @@ def fun_give_back_observables(psi, parameters, N):
 
 
 
-def PR_ED_N2( potential, Jxx, time_interest, Jz ):
+def PR_ED_N2( potential, Jxx, time_interest, Jz, sites, reduce_memory ):
     '''
     Calculate the PR using ED, only for small systems.
     '''
@@ -834,16 +846,19 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 
     all_sites = np.asarray( list( combinations(np.arange(L), 2) ) )
 
-    PR_T = np.zeros( (L-1, len(time_interest)) )
+    PR_T = np.zeros( (len(sites), len(time_interest)) )
 
-    for j in range(0, L-1):
+    for j in range(0, len(sites)):
 
-        local_store = np.einsum("i, ik -> ki", v_new[:, where_together[j] ], v_new )
+        local_store = np.einsum("i, ik -> ki", v_new[:, where_together[sites[j]] ], v_new )
 
-        final_r, final_c = time_evolution_matrix(local_store, E_new, time_interest )
+        if(reduce_memory):
+            final_r, final_c = time_evolution_loop(local_store, E_new, time_interest )
+            final = final_r + final_c*1j
+            PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
+        else:
+            final = time_evolution(local_store, E_new, time_interest )
+            PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
 
-        final = final_r + final_c*1j
-
-        PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
 
     return PR_T

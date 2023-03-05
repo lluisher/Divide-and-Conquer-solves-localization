@@ -64,15 +64,17 @@ class Technical_Parameters_Dyn():
     * **precision**: Upper bound of the error when calculating the Participation Ratio (PR).\n
     * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
     * **error_propagation**: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.\n
+    * **reduce_memory**: Boolean, how to calculate the dynamics. If True, using for loop (Numba), otherwise, via matrix multiplication (default).
     '''
 
 
-    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation=10):
+    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation=10, reduce_memory=False):
         self.subsystem = subsystem
         self.min_jump = min_jump
         self.precision = precision
         self.cutoff_variance = cutoff_variance
         self.error_propagation = error_propagation
+        self.reduce_memory = reduce_memory
 
 
 
