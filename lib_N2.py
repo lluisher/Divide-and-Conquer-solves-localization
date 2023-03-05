@@ -551,7 +551,7 @@ def dynamics_site_first(x):
                 local_store = 0
                 PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
             else:
-                final = time_evolution(local_store, new_E, T )
+                final = time_evolution(local_store, new_E[maybe], T )
                 local_store = 0
                 PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
 
@@ -619,7 +619,7 @@ def DaC_N2_dyn( parameters_system, time, parameters_technical):
     error_propagation = parameters_technical.error_propagation
     min_jump = parameters_technical.min_jump
     epsilon = parameters_technical.precision
-    reduce_memory = parameters_technical.memory
+    reduce_memory = parameters_technical.reduce_memory
 
     PR = []
     real_site = []
