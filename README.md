@@ -1,7 +1,7 @@
 # Divide-and-Conquer-solves-localization
 Code, based in a Divide-and-Conquer (DaC) scheme, to find the localized eigenstates and the dynamical evolution of states out-of-equilibrium in arbitrarily large systems with few (1 or 2) particles.
 For more details, please see the [paper in Arxiv](http://arxiv.org/abs/2211.13089).
-The documentation for the functions can be found at [documentation](https://rawcdn.githack.com/lluisher/Divide-and-Conquer-solves-localization/009a3bc61e152966838546ba1543334b9da90079/html/DaC/index.html).
+The documentation for the functions can be found at [documentation](https://rawcdn.githack.com/lluisher/Divide-and-Conquer-solves-localization/0fdd35604cdf2acf17d957c38240e6d200aff409/html/Divide-and-Conquer-solves-localization/index.html).
 
 
 
