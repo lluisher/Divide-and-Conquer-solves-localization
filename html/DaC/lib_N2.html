@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>DaC.lib_N2 API documentation</title>
+<title>Divide-and-Conquer-solves-localization.lib_N2 API documentation</title>
 <meta name="description" content="Module with the functions to implement the DaC for
 the Two Interacting Particles (TIP) problem." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -20,7 +20,7 @@ the Two Interacting Particles (TIP) problem." />
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>DaC.lib_N2</code></h1>
+<h1 class="title">Module <code>Divide-and-Conquer-solves-localization.lib_N2</code></h1>
 </header>
 <section id="section-intro">
 <p>Module with the functions to implement the DaC for
@@ -463,12 +463,21 @@ def DaC_eigen_N2( parameters_system, parameters_technical):
 
 
 
+def time_evolution(A, new_E, T):
+    &#39;&#39;&#39;
+    Calculates the PR of the initial states (rows of A)
+    as a function of time (T).\n
+    Memory consuming but faster.
+    &#39;&#39;&#39;
+
+    evol_matrix = np.e**( -1j * np.tensordot(new_E, T, axes = 0) )
+    return np.dot(A, evol_matrix)
 
 
 
 
 @jit(nopython=True)
-def time_evolution_matrix(A, new_E, T):
+def time_evolution_loop(A, new_E, T):
     &#39;&#39;&#39;
     Calculates the PR of the initial states (rows of A)
     as a function of time (T).\n
@@ -506,7 +515,7 @@ def dynamics_site_first(x):
     Calculate the dynamics of the states in a given subsystem (interval).
     &#39;&#39;&#39;
 
-    (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation) = x
+    (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation, reduce_memory) = x
 
     l0 = len(h)
 
@@ -565,15 +574,17 @@ def dynamics_site_first(x):
 
             local_store = local_store[relevant_eigen].T
 
-            final_r, final_c = time_evolution_matrix(local_store, new_E[maybe], T )
-
-            final = final_r + final_c*1j
-
-            final_r = 0
-            final_c = 0
-            local_store = 0
-
-            PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
+            if(reduce_memory):
+                final_r, final_c = time_evolution_loop(local_store, new_E[maybe], T )
+                final = final_r + final_c*1j
+                final_r = 0
+                final_c = 0
+                local_store = 0
+                PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
+            else:
+                final = time_evolution(local_store, new_E[maybe], T )
+                local_store = 0
+                PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
 
     else:
         PR_T = []
@@ -639,6 +650,7 @@ def DaC_N2_dyn( parameters_system, time, parameters_technical):
     error_propagation = parameters_technical.error_propagation
     min_jump = parameters_technical.min_jump
     epsilon = parameters_technical.precision
+    reduce_memory = parameters_technical.reduce_memory
 
     PR = []
     real_site = []
@@ -675,7 +687,7 @@ def DaC_N2_dyn( parameters_system, time, parameters_technical):
             last_dyn = min(first_dyn + L-1 - site_now, l0)     #Not included
 
 
-        PR_local, how_many = dynamics_site_first( [first_dyn, last_dyn, h_local, Jxx, Jz, J1, J2, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation] )
+        PR_local, how_many = dynamics_site_first( [first_dyn, last_dyn, h_local, Jxx, Jz, J1, J2, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation, reduce_memory] )
 
 
         if(how_many != 0):
@@ -848,7 +860,7 @@ def fun_give_back_observables(psi, parameters, N):
 
 
 
-def PR_ED_N2( potential, Jxx, time_interest, Jz ):
+def PR_ED_N2( potential, Jxx, time_interest, Jz, sites, reduce_memory ):
     &#39;&#39;&#39;
     Calculate the PR using ED, only for small systems.
     &#39;&#39;&#39;
@@ -865,17 +877,20 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 
     all_sites = np.asarray( list( combinations(np.arange(L), 2) ) )
 
-    PR_T = np.zeros( (L-1, len(time_interest)) )
+    PR_T = np.zeros( (len(sites), len(time_interest)) )
 
-    for j in range(0, L-1):
+    for j in range(0, len(sites)):
 
-        local_store = np.einsum(&#34;i, ik -&gt; ki&#34;, v_new[:, where_together[j] ], v_new )
+        local_store = np.einsum(&#34;i, ik -&gt; ki&#34;, v_new[:, where_together[sites[j]] ], v_new )
 
-        final_r, final_c = time_evolution_matrix(local_store, E_new, time_interest )
+        if(reduce_memory):
+            final_r, final_c = time_evolution_loop(local_store, E_new, time_interest )
+            final = final_r + final_c*1j
+            PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
+        else:
+            final = time_evolution(local_store, E_new, time_interest )
+            PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
 
-        final = final_r + final_c*1j
-
-        PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
 
     return PR_T</code></pre>
 </details>
@@ -887,7 +902,7 @@ def PR_ED_N2( potential, Jxx, time_interest, Jz ):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="DaC.lib_N2.DaC_N2_dyn"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.DaC_N2_dyn"><code class="name flex">
 <span>def <span class="ident">DaC_N2_dyn</span></span>(<span>parameters_system, time, parameters_technical)</span>
 </code></dt>
 <dd>
@@ -937,6 +952,7 @@ corresponding initial site .</p></div>
     error_propagation = parameters_technical.error_propagation
     min_jump = parameters_technical.min_jump
     epsilon = parameters_technical.precision
+    reduce_memory = parameters_technical.reduce_memory
 
     PR = []
     real_site = []
@@ -973,7 +989,7 @@ corresponding initial site .</p></div>
             last_dyn = min(first_dyn + L-1 - site_now, l0)     #Not included
 
 
-        PR_local, how_many = dynamics_site_first( [first_dyn, last_dyn, h_local, Jxx, Jz, J1, J2, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation] )
+        PR_local, how_many = dynamics_site_first( [first_dyn, last_dyn, h_local, Jxx, Jz, J1, J2, Vertex_new, inv_Vertex_new, hopping, band_width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation, reduce_memory] )
 
 
         if(how_many != 0):
@@ -994,7 +1010,7 @@ corresponding initial site .</p></div>
     return PR, real_site</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.DaC_eigen_N2"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.DaC_eigen_N2"><code class="name flex">
 <span>def <span class="ident">DaC_eigen_N2</span></span>(<span>parameters_system, parameters_technical)</span>
 </code></dt>
 <dd>
@@ -1149,7 +1165,7 @@ each of the obtained eigenstate is localized.</p></div>
     return E_local, Observables, popu, begin_local</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.E_v_subset"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.E_v_subset"><code class="name flex">
 <span>def <span class="ident">E_v_subset</span></span>(<span>x)</span>
 </code></dt>
 <dd>
@@ -1192,8 +1208,8 @@ each of the obtained eigenstate is localized.</p></div>
     return E, v</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.PR_ED_N2"><code class="name flex">
-<span>def <span class="ident">PR_ED_N2</span></span>(<span>potential, Jxx, time_interest, Jz)</span>
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.PR_ED_N2"><code class="name flex">
+<span>def <span class="ident">PR_ED_N2</span></span>(<span>potential, Jxx, time_interest, Jz, sites, reduce_memory)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Calculate the PR using ED, only for small systems.</p></div>
@@ -1201,7 +1217,7 @@ each of the obtained eigenstate is localized.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def PR_ED_N2( potential, Jxx, time_interest, Jz ):
+<pre><code class="python">def PR_ED_N2( potential, Jxx, time_interest, Jz, sites, reduce_memory ):
     &#39;&#39;&#39;
     Calculate the PR using ED, only for small systems.
     &#39;&#39;&#39;
@@ -1218,22 +1234,25 @@ each of the obtained eigenstate is localized.</p></div>
 
     all_sites = np.asarray( list( combinations(np.arange(L), 2) ) )
 
-    PR_T = np.zeros( (L-1, len(time_interest)) )
+    PR_T = np.zeros( (len(sites), len(time_interest)) )
 
-    for j in range(0, L-1):
+    for j in range(0, len(sites)):
 
-        local_store = np.einsum(&#34;i, ik -&gt; ki&#34;, v_new[:, where_together[j] ], v_new )
+        local_store = np.einsum(&#34;i, ik -&gt; ki&#34;, v_new[:, where_together[sites[j]] ], v_new )
 
-        final_r, final_c = time_evolution_matrix(local_store, E_new, time_interest )
+        if(reduce_memory):
+            final_r, final_c = time_evolution_loop(local_store, E_new, time_interest )
+            final = final_r + final_c*1j
+            PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
+        else:
+            final = time_evolution(local_store, E_new, time_interest )
+            PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
 
-        final = final_r + final_c*1j
-
-        PR_T[j] = cal_PR_density(final, all_sites, np.ones(len(all_sites), dtype = bool) )
 
     return PR_T</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.banded_H"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.banded_H"><code class="name flex">
 <span>def <span class="ident">banded_H</span></span>(<span>h, Jxx, Jz, m, permutation, hopping, width)</span>
 </code></dt>
 <dd>
@@ -1268,7 +1287,7 @@ each of the obtained eigenstate is localized.</p></div>
     return H</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.cal_PR_density"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.cal_PR_density"><code class="name flex">
 <span>def <span class="ident">cal_PR_density</span></span>(<span>psi, all_sites, relevant_sites)</span>
 </code></dt>
 <dd>
@@ -1303,7 +1322,7 @@ each of the obtained eigenstate is localized.</p></div>
     return PR</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.check_variance_N2"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.check_variance_N2"><code class="name flex">
 <span>def <span class="ident">check_variance_N2</span></span>(<span>x)</span>
 </code></dt>
 <dd>
@@ -1324,7 +1343,7 @@ each of the obtained eigenstate is localized.</p></div>
     return vari</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.compare"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.compare"><code class="name flex">
 <span>def <span class="ident">compare</span></span>(<span>E_left, v_left, E_center, v_center, which_old, which_new, tol_overlap, Delta_E)</span>
 </code></dt>
 <dd>
@@ -1372,7 +1391,7 @@ each of the obtained eigenstate is localized.</p></div>
     return E_center, v_center</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.create_connections"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.create_connections"><code class="name flex">
 <span>def <span class="ident">create_connections</span></span>(<span>M, M2)</span>
 </code></dt>
 <dd>
@@ -1407,7 +1426,7 @@ to sites (i+-1, j) and (i, j+-1)</p></div>
     return Edges, Degree</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.dynamics_site_first"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.dynamics_site_first"><code class="name flex">
 <span>def <span class="ident">dynamics_site_first</span></span>(<span>x)</span>
 </code></dt>
 <dd>
@@ -1421,7 +1440,7 @@ to sites (i+-1, j) and (i, j+-1)</p></div>
     Calculate the dynamics of the states in a given subsystem (interval).
     &#39;&#39;&#39;
 
-    (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation) = x
+    (delta, end, h, Jxx, Jz, J1, J2, permutation, inv_permutation, hopping, width, auxi_left, auxi_right, where_together, max_va, T, epsilon, all_sites, error_propagation, reduce_memory) = x
 
     l0 = len(h)
 
@@ -1480,15 +1499,17 @@ to sites (i+-1, j) and (i, j+-1)</p></div>
 
             local_store = local_store[relevant_eigen].T
 
-            final_r, final_c = time_evolution_matrix(local_store, new_E[maybe], T )
-
-            final = final_r + final_c*1j
-
-            final_r = 0
-            final_c = 0
-            local_store = 0
-
-            PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
+            if(reduce_memory):
+                final_r, final_c = time_evolution_loop(local_store, new_E[maybe], T )
+                final = final_r + final_c*1j
+                final_r = 0
+                final_c = 0
+                local_store = 0
+                PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
+            else:
+                final = time_evolution(local_store, new_E[maybe], T )
+                local_store = 0
+                PR_T[j] = cal_PR_density(final, all_sites, relevant_sites)
 
     else:
         PR_T = []
@@ -1497,7 +1518,7 @@ to sites (i+-1, j) and (i, j+-1)</p></div>
     return PR_T, how_many</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.find_auxi"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.find_auxi"><code class="name flex">
 <span>def <span class="ident">find_auxi</span></span>(<span>Lred)</span>
 </code></dt>
 <dd>
@@ -1533,7 +1554,7 @@ and where the 2 particles are next to each other (where_together)</p></div>
     return auxi_left, auxi_right, where_together</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.fun_cal_PR_Fock"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.fun_cal_PR_Fock"><code class="name flex">
 <span>def <span class="ident">fun_cal_PR_Fock</span></span>(<span>psi)</span>
 </code></dt>
 <dd>
@@ -1552,7 +1573,7 @@ and where the 2 particles are next to each other (where_together)</p></div>
     return PR</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.fun_cal_PR_density"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.fun_cal_PR_density"><code class="name flex">
 <span>def <span class="ident">fun_cal_PR_density</span></span>(<span>psi, how_density, L)</span>
 </code></dt>
 <dd>
@@ -1580,7 +1601,7 @@ and where the 2 particles are next to each other (where_together)</p></div>
     return PR</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.fun_fluc_CoM"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.fun_fluc_CoM"><code class="name flex">
 <span>def <span class="ident">fun_fluc_CoM</span></span>(<span>psi, which_CoM)</span>
 </code></dt>
 <dd>
@@ -1601,7 +1622,7 @@ and where the 2 particles are next to each other (where_together)</p></div>
     return D_CoM</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.fun_give_back_observables"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.fun_give_back_observables"><code class="name flex">
 <span>def <span class="ident">fun_give_back_observables</span></span>(<span>psi, parameters, N)</span>
 </code></dt>
 <dd>
@@ -1626,7 +1647,7 @@ and where the 2 particles are next to each other (where_together)</p></div>
     return Observables</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.fun_mean_dist"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.fun_mean_dist"><code class="name flex">
 <span>def <span class="ident">fun_mean_dist</span></span>(<span>psi, which_dist)</span>
 </code></dt>
 <dd>
@@ -1645,7 +1666,7 @@ and where the 2 particles are next to each other (where_together)</p></div>
     return d</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.fun_parameters"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.fun_parameters"><code class="name flex">
 <span>def <span class="ident">fun_parameters</span></span>(<span>M)</span>
 </code></dt>
 <dd>
@@ -1730,7 +1751,7 @@ third and forth for PR density, fifth for probability together</p></div>
     return aux_parameters</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.fun_prob_together"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.fun_prob_together"><code class="name flex">
 <span>def <span class="ident">fun_prob_together</span></span>(<span>psi, where_together)</span>
 </code></dt>
 <dd>
@@ -1749,7 +1770,7 @@ third and forth for PR density, fifth for probability together</p></div>
     return P</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.generate_how_compare"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.generate_how_compare"><code class="name flex">
 <span>def <span class="ident">generate_how_compare</span></span>(<span>start_left, start_right, end_left, end_right)</span>
 </code></dt>
 <dd>
@@ -1790,7 +1811,7 @@ give us the common entries. Assume that the subsystem have different sizes.</p><
     return which_old, which_new</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.order_RCM"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.order_RCM"><code class="name flex">
 <span>def <span class="ident">order_RCM</span></span>(<span>M)</span>
 </code></dt>
 <dd>
@@ -1884,8 +1905,30 @@ of the matrix.</p></div>
     return Vertex_new, np.argsort(Vertex_new), hopping, band_width</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N2.time_evolution_matrix"><code class="name flex">
-<span>def <span class="ident">time_evolution_matrix</span></span>(<span>A, new_E, T)</span>
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.time_evolution"><code class="name flex">
+<span>def <span class="ident">time_evolution</span></span>(<span>A, new_E, T)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculates the PR of the initial states (rows of A)
+as a function of time (T).</p>
+<p>Memory consuming but faster.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def time_evolution(A, new_E, T):
+    &#39;&#39;&#39;
+    Calculates the PR of the initial states (rows of A)
+    as a function of time (T).\n
+    Memory consuming but faster.
+    &#39;&#39;&#39;
+
+    evol_matrix = np.e**( -1j * np.tensordot(new_E, T, axes = 0) )
+    return np.dot(A, evol_matrix)</code></pre>
+</details>
+</dd>
+<dt id="Divide-and-Conquer-solves-localization.lib_N2.time_evolution_loop"><code class="name flex">
+<span>def <span class="ident">time_evolution_loop</span></span>(<span>A, new_E, T)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Calculates the PR of the initial states (rows of A)
@@ -1897,7 +1940,7 @@ as a function of time (T).</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@jit(nopython=True)
-def time_evolution_matrix(A, new_E, T):
+def time_evolution_loop(A, new_E, T):
     &#39;&#39;&#39;
     Calculates the PR of the initial states (rows of A)
     as a function of time (T).\n
@@ -1942,32 +1985,33 @@ def time_evolution_matrix(A, new_E, T):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="DaC" href="index.html">DaC</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization" href="index.html">Divide-and-Conquer-solves-localization</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="DaC.lib_N2.DaC_N2_dyn" href="#DaC.lib_N2.DaC_N2_dyn">DaC_N2_dyn</a></code></li>
-<li><code><a title="DaC.lib_N2.DaC_eigen_N2" href="#DaC.lib_N2.DaC_eigen_N2">DaC_eigen_N2</a></code></li>
-<li><code><a title="DaC.lib_N2.E_v_subset" href="#DaC.lib_N2.E_v_subset">E_v_subset</a></code></li>
-<li><code><a title="DaC.lib_N2.PR_ED_N2" href="#DaC.lib_N2.PR_ED_N2">PR_ED_N2</a></code></li>
-<li><code><a title="DaC.lib_N2.banded_H" href="#DaC.lib_N2.banded_H">banded_H</a></code></li>
-<li><code><a title="DaC.lib_N2.cal_PR_density" href="#DaC.lib_N2.cal_PR_density">cal_PR_density</a></code></li>
-<li><code><a title="DaC.lib_N2.check_variance_N2" href="#DaC.lib_N2.check_variance_N2">check_variance_N2</a></code></li>
-<li><code><a title="DaC.lib_N2.compare" href="#DaC.lib_N2.compare">compare</a></code></li>
-<li><code><a title="DaC.lib_N2.create_connections" href="#DaC.lib_N2.create_connections">create_connections</a></code></li>
-<li><code><a title="DaC.lib_N2.dynamics_site_first" href="#DaC.lib_N2.dynamics_site_first">dynamics_site_first</a></code></li>
-<li><code><a title="DaC.lib_N2.find_auxi" href="#DaC.lib_N2.find_auxi">find_auxi</a></code></li>
-<li><code><a title="DaC.lib_N2.fun_cal_PR_Fock" href="#DaC.lib_N2.fun_cal_PR_Fock">fun_cal_PR_Fock</a></code></li>
-<li><code><a title="DaC.lib_N2.fun_cal_PR_density" href="#DaC.lib_N2.fun_cal_PR_density">fun_cal_PR_density</a></code></li>
-<li><code><a title="DaC.lib_N2.fun_fluc_CoM" href="#DaC.lib_N2.fun_fluc_CoM">fun_fluc_CoM</a></code></li>
-<li><code><a title="DaC.lib_N2.fun_give_back_observables" href="#DaC.lib_N2.fun_give_back_observables">fun_give_back_observables</a></code></li>
-<li><code><a title="DaC.lib_N2.fun_mean_dist" href="#DaC.lib_N2.fun_mean_dist">fun_mean_dist</a></code></li>
-<li><code><a title="DaC.lib_N2.fun_parameters" href="#DaC.lib_N2.fun_parameters">fun_parameters</a></code></li>
-<li><code><a title="DaC.lib_N2.fun_prob_together" href="#DaC.lib_N2.fun_prob_together">fun_prob_together</a></code></li>
-<li><code><a title="DaC.lib_N2.generate_how_compare" href="#DaC.lib_N2.generate_how_compare">generate_how_compare</a></code></li>
-<li><code><a title="DaC.lib_N2.order_RCM" href="#DaC.lib_N2.order_RCM">order_RCM</a></code></li>
-<li><code><a title="DaC.lib_N2.time_evolution_matrix" href="#DaC.lib_N2.time_evolution_matrix">time_evolution_matrix</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.DaC_N2_dyn" href="#Divide-and-Conquer-solves-localization.lib_N2.DaC_N2_dyn">DaC_N2_dyn</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.DaC_eigen_N2" href="#Divide-and-Conquer-solves-localization.lib_N2.DaC_eigen_N2">DaC_eigen_N2</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.E_v_subset" href="#Divide-and-Conquer-solves-localization.lib_N2.E_v_subset">E_v_subset</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.PR_ED_N2" href="#Divide-and-Conquer-solves-localization.lib_N2.PR_ED_N2">PR_ED_N2</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.banded_H" href="#Divide-and-Conquer-solves-localization.lib_N2.banded_H">banded_H</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.cal_PR_density" href="#Divide-and-Conquer-solves-localization.lib_N2.cal_PR_density">cal_PR_density</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.check_variance_N2" href="#Divide-and-Conquer-solves-localization.lib_N2.check_variance_N2">check_variance_N2</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.compare" href="#Divide-and-Conquer-solves-localization.lib_N2.compare">compare</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.create_connections" href="#Divide-and-Conquer-solves-localization.lib_N2.create_connections">create_connections</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.dynamics_site_first" href="#Divide-and-Conquer-solves-localization.lib_N2.dynamics_site_first">dynamics_site_first</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.find_auxi" href="#Divide-and-Conquer-solves-localization.lib_N2.find_auxi">find_auxi</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.fun_cal_PR_Fock" href="#Divide-and-Conquer-solves-localization.lib_N2.fun_cal_PR_Fock">fun_cal_PR_Fock</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.fun_cal_PR_density" href="#Divide-and-Conquer-solves-localization.lib_N2.fun_cal_PR_density">fun_cal_PR_density</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.fun_fluc_CoM" href="#Divide-and-Conquer-solves-localization.lib_N2.fun_fluc_CoM">fun_fluc_CoM</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.fun_give_back_observables" href="#Divide-and-Conquer-solves-localization.lib_N2.fun_give_back_observables">fun_give_back_observables</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.fun_mean_dist" href="#Divide-and-Conquer-solves-localization.lib_N2.fun_mean_dist">fun_mean_dist</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.fun_parameters" href="#Divide-and-Conquer-solves-localization.lib_N2.fun_parameters">fun_parameters</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.fun_prob_together" href="#Divide-and-Conquer-solves-localization.lib_N2.fun_prob_together">fun_prob_together</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.generate_how_compare" href="#Divide-and-Conquer-solves-localization.lib_N2.generate_how_compare">generate_how_compare</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.order_RCM" href="#Divide-and-Conquer-solves-localization.lib_N2.order_RCM">order_RCM</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.time_evolution" href="#Divide-and-Conquer-solves-localization.lib_N2.time_evolution">time_evolution</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N2.time_evolution_loop" href="#Divide-and-Conquer-solves-localization.lib_N2.time_evolution_loop">time_evolution_loop</a></code></li>
 </ul>
 </li>
 </ul>

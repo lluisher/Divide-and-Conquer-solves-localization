@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>DaC.lib_N1 API documentation</title>
+<title>Divide-and-Conquer-solves-localization.lib_N1 API documentation</title>
 <meta name="description" content="Module with the functions to implement the DaC for the Anderson problem." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>DaC.lib_N1</code></h1>
+<h1 class="title">Module <code>Divide-and-Conquer-solves-localization.lib_N1</code></h1>
 </header>
 <section id="section-intro">
 <p>Module with the functions to implement the DaC for the Anderson problem.</p>
@@ -407,7 +407,7 @@ def DaC_dyn_N1( parameters_system, time, parameters_technical ):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="DaC.lib_N1.DaC_dyn_N1"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.DaC_dyn_N1"><code class="name flex">
 <span>def <span class="ident">DaC_dyn_N1</span></span>(<span>parameters_system, time, parameters_technical)</span>
 </code></dt>
 <dd>
@@ -502,7 +502,7 @@ corresponding initial site .</p></div>
     return PR, real_site</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N1.DaC_eigen_N1"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.DaC_eigen_N1"><code class="name flex">
 <span>def <span class="ident">DaC_eigen_N1</span></span>(<span>parameters_system, parameters_technical)</span>
 </code></dt>
 <dd>
@@ -608,7 +608,7 @@ containing several cutoffs and parameters needed in the DaC algorithm.</p>
     return E_local[:number], PR_local[:number], popu_local</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N1.PR_ED"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.PR_ED"><code class="name flex">
 <span>def <span class="ident">PR_ED</span></span>(<span>potential, hopping, time_interest)</span>
 </code></dt>
 <dd>
@@ -653,7 +653,7 @@ each column a different value of time.</p></div>
     return PR_T_ED</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N1.add_new_data_E_PR_Population_Number"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.add_new_data_E_PR_Population_Number"><code class="name flex">
 <span>def <span class="ident">add_new_data_E_PR_Population_Number</span></span>(<span>popu, E, PR, number, first, last, E_new, v_new)</span>
 </code></dt>
 <dd>
@@ -676,7 +676,7 @@ each column a different value of time.</p></div>
     return popu, E, PR, number</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N1.check_variance_N1"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.check_variance_N1"><code class="name flex">
 <span>def <span class="ident">check_variance_N1</span></span>(<span>x)</span>
 </code></dt>
 <dd>
@@ -700,7 +700,7 @@ it is basically the population at the edge of the subsystem.</p></div>
     return vari</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N1.compare_vec"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.compare_vec"><code class="name flex">
 <span>def <span class="ident">compare_vec</span></span>(<span>v_old, E_old, v_new, E_new, M, last_old, last_new, tol_overlap, Delta_E)</span>
 </code></dt>
 <dd>
@@ -742,7 +742,7 @@ it is basically the population at the edge of the subsystem.</p></div>
     return v_new, E_new</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N1.dynamics_site_first"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.dynamics_site_first"><code class="name flex">
 <span>def <span class="ident">dynamics_site_first</span></span>(<span>x)</span>
 </code></dt>
 <dd>
@@ -799,7 +799,7 @@ for all the times of interest.</p></div>
     return PR_T, how_many</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N1.eliminate_repetitions"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.eliminate_repetitions"><code class="name flex">
 <span>def <span class="ident">eliminate_repetitions</span></span>(<span>how_many, previous_eigen, previous_E, v_new, E_new, M, previous_interval, last, cutoff_overlap, cutoff_E, i)</span>
 </code></dt>
 <dd>
@@ -825,7 +825,7 @@ in which they are localized and the actual subsystem)</p></div>
     return v_new, E_new</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N1.energies_ED"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.energies_ED"><code class="name flex">
 <span>def <span class="ident">energies_ED</span></span>(<span>potential, hopping)</span>
 </code></dt>
 <dd>
@@ -857,7 +857,7 @@ function <strong><em>eigh_tridiagonal()</em></strong> defined in scipy.</p>
     return E</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N1.obtain_eigen_subsystem"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.obtain_eigen_subsystem"><code class="name flex">
 <span>def <span class="ident">obtain_eigen_subsystem</span></span>(<span>first_site, last_site, h, J, cutoff_variance)</span>
 </code></dt>
 <dd>
@@ -888,7 +888,7 @@ which are localized in the given subsystem.</p></div>
     return E_subsystem, v_subsystem</code></pre>
 </details>
 </dd>
-<dt id="DaC.lib_N1.update_bookkepping"><code class="name flex">
+<dt id="Divide-and-Conquer-solves-localization.lib_N1.update_bookkepping"><code class="name flex">
 <span>def <span class="ident">update_bookkepping</span></span>(<span>v_new, E_new, last, previous_eigen=[], previous_E=[], how_many=array([0]), previous_interval=array([0]))</span>
 </code></dt>
 <dd>
@@ -926,22 +926,22 @@ which are localized in the given subsystem.</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="DaC" href="index.html">DaC</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization" href="index.html">Divide-and-Conquer-solves-localization</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="DaC.lib_N1.DaC_dyn_N1" href="#DaC.lib_N1.DaC_dyn_N1">DaC_dyn_N1</a></code></li>
-<li><code><a title="DaC.lib_N1.DaC_eigen_N1" href="#DaC.lib_N1.DaC_eigen_N1">DaC_eigen_N1</a></code></li>
-<li><code><a title="DaC.lib_N1.PR_ED" href="#DaC.lib_N1.PR_ED">PR_ED</a></code></li>
-<li><code><a title="DaC.lib_N1.add_new_data_E_PR_Population_Number" href="#DaC.lib_N1.add_new_data_E_PR_Population_Number">add_new_data_E_PR_Population_Number</a></code></li>
-<li><code><a title="DaC.lib_N1.check_variance_N1" href="#DaC.lib_N1.check_variance_N1">check_variance_N1</a></code></li>
-<li><code><a title="DaC.lib_N1.compare_vec" href="#DaC.lib_N1.compare_vec">compare_vec</a></code></li>
-<li><code><a title="DaC.lib_N1.dynamics_site_first" href="#DaC.lib_N1.dynamics_site_first">dynamics_site_first</a></code></li>
-<li><code><a title="DaC.lib_N1.eliminate_repetitions" href="#DaC.lib_N1.eliminate_repetitions">eliminate_repetitions</a></code></li>
-<li><code><a title="DaC.lib_N1.energies_ED" href="#DaC.lib_N1.energies_ED">energies_ED</a></code></li>
-<li><code><a title="DaC.lib_N1.obtain_eigen_subsystem" href="#DaC.lib_N1.obtain_eigen_subsystem">obtain_eigen_subsystem</a></code></li>
-<li><code><a title="DaC.lib_N1.update_bookkepping" href="#DaC.lib_N1.update_bookkepping">update_bookkepping</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.DaC_dyn_N1" href="#Divide-and-Conquer-solves-localization.lib_N1.DaC_dyn_N1">DaC_dyn_N1</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.DaC_eigen_N1" href="#Divide-and-Conquer-solves-localization.lib_N1.DaC_eigen_N1">DaC_eigen_N1</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.PR_ED" href="#Divide-and-Conquer-solves-localization.lib_N1.PR_ED">PR_ED</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.add_new_data_E_PR_Population_Number" href="#Divide-and-Conquer-solves-localization.lib_N1.add_new_data_E_PR_Population_Number">add_new_data_E_PR_Population_Number</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.check_variance_N1" href="#Divide-and-Conquer-solves-localization.lib_N1.check_variance_N1">check_variance_N1</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.compare_vec" href="#Divide-and-Conquer-solves-localization.lib_N1.compare_vec">compare_vec</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.dynamics_site_first" href="#Divide-and-Conquer-solves-localization.lib_N1.dynamics_site_first">dynamics_site_first</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.eliminate_repetitions" href="#Divide-and-Conquer-solves-localization.lib_N1.eliminate_repetitions">eliminate_repetitions</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.energies_ED" href="#Divide-and-Conquer-solves-localization.lib_N1.energies_ED">energies_ED</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.obtain_eigen_subsystem" href="#Divide-and-Conquer-solves-localization.lib_N1.obtain_eigen_subsystem">obtain_eigen_subsystem</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization.lib_N1.update_bookkepping" href="#Divide-and-Conquer-solves-localization.lib_N1.update_bookkepping">update_bookkepping</a></code></li>
 </ul>
 </li>
 </ul>

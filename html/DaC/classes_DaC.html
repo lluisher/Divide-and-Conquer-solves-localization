@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>DaC.classes_DaC API documentation</title>
+<title>Divide-and-Conquer-solves-localization.classes_DaC API documentation</title>
 <meta name="description" content="File with useful classes for the Anderson and TIP problem." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>DaC.classes_DaC</code></h1>
+<h1 class="title">Module <code>Divide-and-Conquer-solves-localization.classes_DaC</code></h1>
 </header>
 <section id="section-intro">
 <p>File with useful classes for the Anderson and TIP problem.</p>
@@ -93,15 +93,17 @@ class Technical_Parameters_Dyn():
     * **precision**: Upper bound of the error when calculating the Participation Ratio (PR).\n
     * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
     * **error_propagation**: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.\n
+    * **reduce_memory**: Boolean, how to calculate the dynamics. If True, using for loop (Numba), otherwise, via matrix multiplication (default).
     &#39;&#39;&#39;
 
 
-    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation=10):
+    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation=10, reduce_memory=False):
         self.subsystem = subsystem
         self.min_jump = min_jump
         self.precision = precision
         self.cutoff_variance = cutoff_variance
         self.error_propagation = error_propagation
+        self.reduce_memory = reduce_memory
 
 
 
@@ -160,7 +162,7 @@ class Observables_TIP_class():
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="DaC.classes_DaC.Observables_TIP_class"><code class="flex name class">
+<dt id="Divide-and-Conquer-solves-localization.classes_DaC.Observables_TIP_class"><code class="flex name class">
 <span>class <span class="ident">Observables_TIP_class</span></span>
 <span>(</span><span>meanDist=array([], dtype=float64), flucCoM=array([], dtype=float64), PRDensity=array([], dtype=float64), PRFock=array([], dtype=float64), probTogether=array([], dtype=float64))</span>
 </code></dt>
@@ -215,7 +217,7 @@ class Observables_TIP_class():
         return Observables_TIP_class( new_dist, new_CoM, new_PR_Density, new_PR_Fock, new_prob )</code></pre>
 </details>
 </dd>
-<dt id="DaC.classes_DaC.System_Parameters_Anderson"><code class="flex name class">
+<dt id="Divide-and-Conquer-solves-localization.classes_DaC.System_Parameters_Anderson"><code class="flex name class">
 <span>class <span class="ident">System_Parameters_Anderson</span></span>
 <span>(</span><span>system, disorder, potential, hopping_dist=[0], hopping_strength=1, hopping_anisotropy=0)</span>
 </code></dt>
@@ -268,7 +270,7 @@ class Observables_TIP_class():
             self.hopping_dist = hopping_dist</code></pre>
 </details>
 </dd>
-<dt id="DaC.classes_DaC.System_Parameters_TIP"><code class="flex name class">
+<dt id="Divide-and-Conquer-solves-localization.classes_DaC.System_Parameters_TIP"><code class="flex name class">
 <span>class <span class="ident">System_Parameters_TIP</span></span>
 <span>(</span><span>system=0, disorder=0, hopping=1, interaction=1, potential=0)</span>
 </code></dt>
@@ -313,9 +315,9 @@ class Observables_TIP_class():
         self.potential = potential</code></pre>
 </details>
 </dd>
-<dt id="DaC.classes_DaC.Technical_Parameters_Dyn"><code class="flex name class">
+<dt id="Divide-and-Conquer-solves-localization.classes_DaC.Technical_Parameters_Dyn"><code class="flex name class">
 <span>class <span class="ident">Technical_Parameters_Dyn</span></span>
-<span>(</span><span>subsystem, min_jump=1, precision=0.0001, cutoff_variance=1e-32, error_propagation=10)</span>
+<span>(</span><span>subsystem, min_jump=1, precision=0.0001, cutoff_variance=1e-32, error_propagation=10, reduce_memory=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Parameters needed for the Divide-and-Conquer algorithm ("unphysical" parameters),
@@ -336,6 +338,9 @@ when interested in the dynamics of both the Anderson and TIP problem.</p>
 <li>
 <p><strong>error_propagation</strong>: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.</p>
 </li>
+<li>
+<p><strong>reduce_memory</strong>: Boolean, how to calculate the dynamics. If True, using for loop (Numba), otherwise, via matrix multiplication (default).</p>
+</li>
 </ul></div>
 <details class="source">
 <summary>
@@ -350,18 +355,20 @@ when interested in the dynamics of both the Anderson and TIP problem.</p>
     * **precision**: Upper bound of the error when calculating the Participation Ratio (PR).\n
     * **cutoff_variance**: Cutoff for the variance of the eigenstates (accept only those with lower variance).\n
     * **error_propagation**: Relates the maximum error amplitude wavefunction with the upper bound of the observable PR. It is observable dependent.\n
+    * **reduce_memory**: Boolean, how to calculate the dynamics. If True, using for loop (Numba), otherwise, via matrix multiplication (default).
     &#39;&#39;&#39;
 
 
-    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation=10):
+    def __init__(self, subsystem, min_jump = 1, precision = 1e-4, cutoff_variance=1e-32, error_propagation=10, reduce_memory=False):
         self.subsystem = subsystem
         self.min_jump = min_jump
         self.precision = precision
         self.cutoff_variance = cutoff_variance
-        self.error_propagation = error_propagation</code></pre>
+        self.error_propagation = error_propagation
+        self.reduce_memory = reduce_memory</code></pre>
 </details>
 </dd>
-<dt id="DaC.classes_DaC.Technical_Parameters_Eigen"><code class="flex name class">
+<dt id="Divide-and-Conquer-solves-localization.classes_DaC.Technical_Parameters_Eigen"><code class="flex name class">
 <span>class <span class="ident">Technical_Parameters_Eigen</span></span>
 <span>(</span><span>subsystem, shift=0.5, cutoff_variance=1e-32, cutoff_overlap=1e-07, cutoff_E=1e-07)</span>
 </code></dt>
@@ -420,25 +427,25 @@ Valid for both Anderson and TIP problem.</p>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="DaC" href="index.html">DaC</a></code></li>
+<li><code><a title="Divide-and-Conquer-solves-localization" href="index.html">Divide-and-Conquer-solves-localization</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="DaC.classes_DaC.Observables_TIP_class" href="#DaC.classes_DaC.Observables_TIP_class">Observables_TIP_class</a></code></h4>
+<h4><code><a title="Divide-and-Conquer-solves-localization.classes_DaC.Observables_TIP_class" href="#Divide-and-Conquer-solves-localization.classes_DaC.Observables_TIP_class">Observables_TIP_class</a></code></h4>
 </li>
 <li>
-<h4><code><a title="DaC.classes_DaC.System_Parameters_Anderson" href="#DaC.classes_DaC.System_Parameters_Anderson">System_Parameters_Anderson</a></code></h4>
+<h4><code><a title="Divide-and-Conquer-solves-localization.classes_DaC.System_Parameters_Anderson" href="#Divide-and-Conquer-solves-localization.classes_DaC.System_Parameters_Anderson">System_Parameters_Anderson</a></code></h4>
 </li>
 <li>
-<h4><code><a title="DaC.classes_DaC.System_Parameters_TIP" href="#DaC.classes_DaC.System_Parameters_TIP">System_Parameters_TIP</a></code></h4>
+<h4><code><a title="Divide-and-Conquer-solves-localization.classes_DaC.System_Parameters_TIP" href="#Divide-and-Conquer-solves-localization.classes_DaC.System_Parameters_TIP">System_Parameters_TIP</a></code></h4>
 </li>
 <li>
-<h4><code><a title="DaC.classes_DaC.Technical_Parameters_Dyn" href="#DaC.classes_DaC.Technical_Parameters_Dyn">Technical_Parameters_Dyn</a></code></h4>
+<h4><code><a title="Divide-and-Conquer-solves-localization.classes_DaC.Technical_Parameters_Dyn" href="#Divide-and-Conquer-solves-localization.classes_DaC.Technical_Parameters_Dyn">Technical_Parameters_Dyn</a></code></h4>
 </li>
 <li>
-<h4><code><a title="DaC.classes_DaC.Technical_Parameters_Eigen" href="#DaC.classes_DaC.Technical_Parameters_Eigen">Technical_Parameters_Eigen</a></code></h4>
+<h4><code><a title="Divide-and-Conquer-solves-localization.classes_DaC.Technical_Parameters_Eigen" href="#Divide-and-Conquer-solves-localization.classes_DaC.Technical_Parameters_Eigen">Technical_Parameters_Eigen</a></code></h4>
 </li>
 </ul>
 </li>
