@@ -5,6 +5,7 @@ import numpy as np
 
 from scipy.linalg import eigh_tridiagonal
 
+from numpy import linalg as LA
 
 
 def energies_ED( potential, hopping ):
@@ -15,7 +16,14 @@ def energies_ED( potential, hopping ):
     * **hopping**: Values of the off-diagonal (hopping). They might be site-dependent.\n
     It returns an array with the energies.
     '''
-    E, V = eigh_tridiagonal(-potential, hopping)
+    M = len(potential)
+    try:
+        E, V = eigh_tridiagonal(-potential, hopping)
+    except:
+        H_local = np.zeros( (M,M) )
+        H_local[np.arange(M), np.arange(M)] = -potential
+        H_local[np.arange(M-1), np.arange(M-1)+1] = H_local[np.arange(M-1)+1, np.arange(M-1)] = hopping
+        E, V = LA.eigh(H_local)
 
     return E
 
@@ -30,7 +38,14 @@ def PR_ED( potential, hopping, time_interest ):
     It returns a 2D numpy array. Each row represent a different initial state,
     each column a different value of time.
     '''
-    E, V = eigh_tridiagonal(-potential, hopping)
+    M = len(potential)
+    try:
+        E, V = eigh_tridiagonal(-potential, hopping)
+    except:
+        H_local = np.zeros( (M,M) )
+        H_local[np.arange(M), np.arange(M)] = -potential
+        H_local[np.arange(M-1), np.arange(M-1)+1] = H_local[np.arange(M-1)+1, np.arange(M-1)] = hopping
+        E, V = LA.eigh(H_local)
 
     V = V.T
 
@@ -99,7 +114,16 @@ def obtain_eigen_subsystem(first_site, last_site, h, J, cutoff_variance):
 
     hred_r = h[ first_site:last_site ]
     J_r = J[ first_site+1:last_site ]
-    E, V = eigh_tridiagonal(-hred_r, J_r)
+
+    M = len(hred_r)
+    try:
+        E, V = eigh_tridiagonal(-hred_r, J_r)
+    except:
+        H_local = np.zeros( (M,M) )
+        H_local[np.arange(M), np.arange(M)] = -hred_r
+        H_local[np.arange(M-1), np.arange(M-1)+1] = H_local[np.arange(M-1)+1, np.arange(M-1)] = J_r
+        E, V = LA.eigh(H_local)
+
     V = V.T
     J0 = J[ first_site ]
     J1 = J[ last_site ]
@@ -264,7 +288,13 @@ def dynamics_site_first(x):
 
     error_ampl = epsilon/( error_propagation*l0 )
 
-    E, V = eigh_tridiagonal(-h, np.zeros(len(h)-1) + Jxx)
+    try:
+        E, V = eigh_tridiagonal(-h, np.zeros(l0-1) + Jxx)
+    except:
+        H_local = np.zeros( (l0,l0) )
+        H_local[np.arange(l0), np.arange(l0)] = -h
+        H_local[np.arange(l0-1), np.arange(l0-1)+1] = H_local[np.arange(l0-1)+1, np.arange(l0-1)] = np.zeros(l0-1) + Jxx
+        E, V = LA.eigh(H_local)
 
     V = V.T
 
