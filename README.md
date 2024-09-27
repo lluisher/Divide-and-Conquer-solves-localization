@@ -21,9 +21,7 @@ The following plot is an example of detail level we can reach thanks to the larg
 ## Model implemented:
 Disordered tight-binding model in 1D:
 
-<img src="https://render.githubusercontent.com/render/math?math={H=\sum_{i=1}^L h_i n_i%2B\sum_{i=1}^{L-1}J_{i,i%2B1}(a_i^{\dagger} a_{i%2B 1}%2Ba_{i%2B 1}^\dagger a_{i})%2BJ_z\sum_{i=1}^{L-1}n_in_{i %2B 1}}#gh-light-mode-only">
-
-<img src="https://render.githubusercontent.com/render/math?math={\color{white}H=\sum_{i=1}^L h_i n_i%2B\sum_{i=1}^{L-1}J_{i,i%2B1}(a_i^{\dagger} a_{i%2B 1}%2Ba_{i%2B 1}^\dagger a_{i})%2BJ_z\sum_{i=1}^{L-1}n_in_{i %2B 1}}#gh-dark-mode-only">
+$$H=\sum_{i=1}^L h_i n_i%2B\sum_{i=1}^{L-1}J_{i,i%2B1}(a_i^{\dagger} a_{i%2B 1}%2Ba_{i%2B 1}^\dagger a_{i})%2BJ_z\sum_{i=1}^{L-1}n_in_{i %2B 1}$$
 
 Other models can be studied, with the corresponding changes of the matrix to diagonalize and the calculation of the variance of the eigenstates of the subsystems.
 
@@ -34,46 +32,33 @@ Other models can be studied, with the corresponding changes of the matrix to dia
 The observables obtained are:
 
 1. The Participation Ratio, for the case of a single particle:
-
-<img src="https://render.githubusercontent.com/render/math?math={\text{PR}(\psi)_{N=1} = \frac{1}{\sum_{i=1}^L |\psi(i)|^4}}#gh-light-mode-only" >
-<img src="https://render.githubusercontent.com/render/math?math={\color{white}\text{PR}(\psi)_{N=1} = \frac{1}{\sum_{i=1}^L |\psi(i)|^4}}#gh-dark-mode-only" >
+   
+$$PR(\psi)_{N=1} = \frac{1}{\sum_{i=1}^L |\psi(i)|^4}$$
 
 
 2. The mean distance between the 2 particles:
-<img src="https://render.githubusercontent.com/render/math?math={\text{D}(\psi)_{N=2} = \sum_{i<j} (j-i) |\psi(i,j)|^2}#gh-light-mode-only">
-
-<img src="https://render.githubusercontent.com/render/math?math={\color{white}\text{D}(\psi)_{N=2} = \sum_{i<j} (j-i) |\psi(i,j)|^2}#gh-dark-mode-only">
-
+   
+$$\text{D}(\psi)_{N=2} = \sum_{i<j} (j-i) |\psi(i,j)|^2 $$
 
 
-3. The fluctuations of the Center-of-Mass (CoM), for the case of two particles, where CoM is defined as:
-
-<img src="https://render.githubusercontent.com/render/math?math={\text{CoM}(\psi)_{N=2} = \sum_{i<j} \frac{i %2B j}{2} |\psi(i,j)|^2}#gh-light-mode-only">
-
-<img src="https://render.githubusercontent.com/render/math?math={\color{white}\text{CoM}(\psi)_{N=2} = \sum_{i<j} \frac{i %2B j}{2} |\psi(i,j)|^2}#gh-dark-mode-only">
+4. The fluctuations of the Center-of-Mass (CoM), for the case of two particles, where CoM is defined as:
+   
+$$\text{CoM}(\psi)_{N=2} = \sum_{i<j} \frac{i %2B j}{2} |\psi(i,j)|^2$$
 
 
-
-4. The Participation Ratio from the density in real space, for the 2 particle sector:
-
-<img src="https://render.githubusercontent.com/render/math?math={\text{PR}_d(\psi)_{N=2} = \sum_i n_i^2, \quad n_i = \frac{1}{2} \sum_{i<j} \psi(i,j)}#gh-light-mode-only">
-
-<img src="https://render.githubusercontent.com/render/math?math={\color{white}\text{PR}_d(\psi)_{N=2} = \sum_i n_i^2, \quad n_i = \frac{1}{2} \sum_{i<j} \psi(i,j)}#gh-dark-mode-only">
+5. The Participation Ratio from the density in real space, for the 2 particle sector:
+   
+$$\text{PR}_d(\psi)_{N=2} = \sum_i n_i^2, \quad n_i = \frac{1}{2} \sum_{i<j} \psi(i,j)$$
 
 
-5. The Participation Ratio in Fock space, for the 2 particle sector:
+6. The Participation Ratio in Fock space, for the 2 particle sector:
 
-<img src="https://render.githubusercontent.com/render/math?math={\text{PR}_F(\psi)_{N=2} = \frac{1}{\sum_{i<j} |\psi(i,j)|^4 }}#gh-light-mode-only">
-
-<img src="https://render.githubusercontent.com/render/math?math={\color{white}\text{PR}_F(\psi)_{N=2} = \frac{1}{\sum_{i<j} |\psi(i,j)|^4 }}#gh-dark-mode-only">
+$$\text{PR}_F(\psi)_{N=2} = \frac{1}{\sum_{i<j} |\psi(i,j)|^4 }$$
 
 
+7. The probability to find the 2 particles in consecutive sites:
 
-6. The probability to find the 2 particles in consecutive sites:
-
-<img src="https://render.githubusercontent.com/render/math?math={\text{P}_T(\psi)_{N=2} = \sum_{i} |\psi(i,i%2B 1)|^2}#gh-light-mode-only">
-
-<img src="https://render.githubusercontent.com/render/math?math={\color{white}\text{P}_T(\psi)_{N=2} = \sum_{i} |\psi(i,i%2B 1)|^2}#gh-dark-mode-only">
+$$\text{P}_T(\psi)_{N=2} = \sum_{i} |\psi(i,i%2B 1)|^2$$
 
 
 
