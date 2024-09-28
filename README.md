@@ -21,7 +21,7 @@ The following plot is an example of detail level we can reach thanks to the larg
 ## Model implemented:
 Disordered tight-binding model in 1D:
 
-$$H=\sum_{i=1}^L h_i n_i%2B\sum_{i=1}^{L-1}J_{i,i%2B1}(a_i^{\dagger} a_{i%2B 1}%2Ba_{i%2B 1}^\dagger a_{i})%2BJ_z\sum_{i=1}^{L-1}n_in_{i %2B 1}$$
+$$H=\sum_{i=1}^L h_i n_i + \sum_{i=1}^{L-1}J_{i,i + 1}(a_i^{\dagger} a_{i + 1} + a_{i + 1}^\dagger a_{i}) + J_z\sum_{i=1}^{L-1}n_i n_{i + 1}$$
 
 Other models can be studied, with the corresponding changes of the matrix to diagonalize and the calculation of the variance of the eigenstates of the subsystems.
 
@@ -33,32 +33,32 @@ The observables obtained are:
 
 1. The Participation Ratio, for the case of a single particle:
    
-$$PR(\psi)_{N=1} = \frac{1}{\sum_{i=1}^L |\psi(i)|^4}$$
+$$\text{PR}(\psi, N=1) = \frac{1}{\sum_{i=1}^L |\psi(i)|^4}$$
 
 
 2. The mean distance between the 2 particles:
    
-$$\text{D}(\psi)_{N=2} = \sum_{i<j} (j-i) |\psi(i,j)|^2 $$
+$$\text{D}(\psi, N=2) = \sum_{i < j} (j-i) |\psi(i,j)|^2 $$
 
 
-4. The fluctuations of the Center-of-Mass (CoM), for the case of two particles, where CoM is defined as:
+3. The fluctuations of the Center-of-Mass (CoM), for the case of two particles, where CoM is defined as:
    
-$$\text{CoM}(\psi)_{N=2} = \sum_{i<j} \frac{i %2B j}{2} |\psi(i,j)|^2$$
+$$\text{CoM}(\psi, N=2) = \sum_{i < j} \frac{i + j}{2} |\psi(i,j)|^2$$
 
 
-5. The Participation Ratio from the density in real space, for the 2 particle sector:
+4. The Participation Ratio from the density in real space, for the 2 particle sector:
    
-$$\text{PR}_d(\psi)_{N=2} = \sum_i n_i^2, \quad n_i = \frac{1}{2} \sum_{i<j} \psi(i,j)$$
+$$\text{PR}(\psi, N=2, d) = \sum_i n_i^2, \quad n_i = \frac{1}{2} \sum_{i < j} \psi(i,j)$$
 
 
-6. The Participation Ratio in Fock space, for the 2 particle sector:
+5. The Participation Ratio in Fock space, for the 2 particle sector:
 
-$$\text{PR}_F(\psi)_{N=2} = \frac{1}{\sum_{i<j} |\psi(i,j)|^4 }$$
+$$\text{PR}(\psi, N=2, F) = \frac{1}{\sum_{i < j} |\psi(i,j)|^4 }$$
 
 
-7. The probability to find the 2 particles in consecutive sites:
+6. The probability to find the 2 particles in consecutive sites:
 
-$$\text{P}_T(\psi)_{N=2} = \sum_{i} |\psi(i,i%2B 1)|^2$$
+$$\text{P}(\psi, N=2) = \sum_{i} |\psi(i,i + 1)|^2$$
 
 
 
